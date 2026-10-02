@@ -3,301 +3,376 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NextTrade | منصة التداول والاستثمار</title>
+    <title>NextTrade | نيكست تريدي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #080a0f;
-            --card-bg: #121824;
-            --card-border: #1e2638;
+            --bg-dark: #0a0d14;
+            --card-bg: #131a26;
+            --card-border: #1f2a3d;
             --gold: #f0b90b;
             --gold-glow: rgba(240, 185, 11, 0.15);
             --text-main: #f1f5f9;
             --text-muted: #8492a6;
             --green: #0ecb81;
             --red: #f6465d;
+            --yellow: #ffb703;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 80px; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 85px; }
 
         /* Auth Screen Overlay */
         #authOverlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg-dark); z-index: 5000;
+            background: var(--bg-dark); z-index: 9999;
             display: flex; align-items: center; justify-content: center; padding: 20px;
         }
         .auth-card {
             background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 16px; padding: 24px; width: 100%; max-width: 400px;
+            border-radius: 18px; padding: 24px; width: 100%; max-width: 380px; text-align: center;
         }
-        .auth-header { text-align: center; margin-bottom: 20px; }
-        .auth-header h2 { color: var(--gold); font-size: 22px; }
+        .auth-card h2 { color: var(--gold); margin-bottom: 15px; font-size: 24px; font-weight: 800; }
 
-        /* Top Bar */
-        .top-bar {
-            background: rgba(18, 24, 36, 0.9); backdrop-filter: blur(10px);
-            padding: 12px 16px; display: flex; justify-content: space-between;
-            align-items: center; border-bottom: 1px solid var(--card-border);
-            position: sticky; top: 0; z-index: 100;
+        /* Top Header & App Download Bar */
+        .top-header {
+            background: var(--card-bg); padding: 12px 16px; border-bottom: 1px solid var(--card-border);
+            display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000;
         }
-        .logo { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 800; color: var(--gold); }
-        .balance-badge { background: var(--gold-glow); border: 1px solid rgba(240, 185, 11, 0.3); color: var(--gold); padding: 4px 12px; border-radius: 20px; font-weight: 700; }
+        .app-title { font-size: 20px; font-weight: 800; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+        .btn-download-app { background: rgba(240, 185, 11, 0.1); border: 1px solid var(--gold); color: var(--gold); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 5px; }
 
-        /* General Layout */
-        .container { padding: 16px; }
-        .hero-banner {
-            background: linear-gradient(135deg, #1e2638 0%, #121824 100%);
-            padding: 20px; border-radius: 16px; border: 1px solid var(--card-border); margin-bottom: 16px;
+        /* Wallet & Investment Header Stats */
+        .header-stats {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; margin: 10px 16px;
+            background: linear-gradient(135deg, #131a26 0%, #0d121b 100%); border-radius: 16px; border: 1px solid var(--card-border);
         }
-        .quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .stat-box { text-align: center; }
+        .stat-title { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+        .stat-value { font-size: 18px; font-weight: 800; color: var(--gold); }
 
-        .btn { border: none; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .btn-primary { background: var(--gold); color: #000; }
-        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid var(--card-border); }
+        /* Page Views Section */
+        .page-view { display: none; padding: 0 16px; }
+        .page-view.active { display: block; }
 
+        /* General Forms & Buttons */
+        .form-group { margin-bottom: 12px; text-align: right; }
+        .form-group label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border);
+            border-radius: 10px; color: #fff; font-size: 13px; outline: none;
+        }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .btn-gold { background: var(--gold); color: #000; }
+        .btn-gold:active { opacity: 0.8; }
+
+        /* Cards Grid */
         .section-card { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--card-border); padding: 16px; margin-bottom: 16px; }
-        .section-title { font-size: 15px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .section-header { font-size: 15px; font-weight: 700; color: var(--gold); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 
-        /* Task & Timer Card */
-        .task-card { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .timer-box { font-size: 18px; font-weight: 800; color: var(--gold); letter-spacing: 1px; }
+        /* Investment Cards Grid */
+        .plans-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .plan-card {
+            background: rgba(255,255,255,0.02); border: 1px solid var(--card-border);
+            border-radius: 12px; padding: 14px; text-align: center;
+        }
+        .plan-price { font-size: 20px; font-weight: 800; color: var(--gold); margin: 6px 0; }
 
-        /* Form Inputs & Modals */
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; padding: 16px; }
-        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; width: 100%; max-width: 420px; position: relative; }
-        .close-btn { position: absolute; left: 16px; top: 16px; color: var(--text-muted); font-size: 20px; cursor: pointer; }
-
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size: 13px; }
+        /* Verification Badge */
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: inline-block; }
+        .badge-pending { background: rgba(255, 183, 3, 0.15); color: var(--yellow); border: 1px solid var(--yellow); }
+        .badge-verified { background: rgba(14, 203, 129, 0.15); color: var(--green); border: 1px solid var(--green); }
 
         /* Bottom Nav */
-        .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
-        .nav-tab { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 10px; text-decoration: none; gap: 4px; cursor: pointer; }
-        .nav-tab.active, .nav-tab:hover { color: var(--gold); }
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg);
+            border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; text-decoration: none; gap: 4px; cursor: pointer; }
+        .nav-item.active { color: var(--gold); font-weight: 700; }
+
+        /* QR Image Styling */
+        .qr-container { text-align: center; margin: 15px 0; background: #fff; padding: 10px; border-radius: 12px; display: inline-block; }
+        .qr-container img { width: 170px; height: 170px; display: block; }
     </style>
 </head>
 <body>
 
-    <!-- Auth Overlay (Login / Register) -->
+    <!-- Auth Screen -->
     <div id="authOverlay">
         <div class="auth-card">
-            <div class="auth-header">
-                <i class="fa-solid fa-chart-line" style="font-size: 32px; color: var(--gold);"></i>
-                <h2>NextTrade</h2>
-                <p style="font-size: 12px; color: var(--text-muted);">تسجيل الدخول أو إنشاء حساب جديد</p>
-            </div>
-            <form id="authForm" onsubmit="handleAuth(event)">
+            <i class="fa-solid fa-chart-line" style="font-size: 40px; color: var(--gold); margin-bottom: 10px;"></i>
+            <h2>نيكست تريدي</h2>
+            <form onsubmit="handleAuth(event)">
                 <div class="form-group">
                     <label>البريد الإلكتروني:</label>
-                    <input type="email" id="authEmail" required placeholder="name@example.com">
+                    <input type="email" id="userEmailInput" required placeholder="example@mail.com">
                 </div>
                 <div class="form-group">
                     <label>كلمة السر:</label>
-                    <input type="password" id="authPass" required placeholder="******">
+                    <input type="password" id="userPass" required placeholder="******">
                 </div>
                 <div class="form-group">
                     <label>تأكيد كلمة السر:</label>
-                    <input type="password" id="authPassConfirm" required placeholder="******">
+                    <input type="password" id="userPassConfirm" required placeholder="******">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">الدخول إلى المنصة</button>
+                <button type="submit" class="btn btn-gold" style="margin-top: 10px;">تسجيل الدخول</button>
             </form>
         </div>
     </div>
 
-    <!-- Main Header -->
-    <div class="top-bar">
-        <div class="logo">
-            <i class="fa-solid fa-chart-line"></i>
-            <span>NextTrade</span>
+    <!-- Header -->
+    <div class="top-header">
+        <div class="app-title"><i class="fa-solid fa-chart-line"></i> نكست تريدي</div>
+        <a href="#" class="btn-download-app" onclick="alert('جارٍ تحضير رابط تحميل التطبيق المباشر...')"><i class="fa-solid fa-download"></i> تنزيل التطبيق</a>
+    </div>
+
+    <!-- Wallet & Investment Stats -->
+    <div class="header-stats">
+        <div class="stat-box">
+            <div class="stat-title">المحفظة</div>
+            <div class="stat-value" id="walletBalance">$0.00</div>
         </div>
-        <div class="balance-badge">
-            <span id="headerBalance">$0.00</span>
+        <div class="stat-box">
+            <div class="stat-title">الاستثمار</div>
+            <div class="stat-value" id="investmentBalance">$0.00</div>
         </div>
     </div>
 
-    <div class="container">
-        <!-- Hero Section -->
-        <div class="hero-banner">
-            <h3 style="font-size: 18px;">مرحباً بك في منصة NextTrade</h3>
-            <p style="font-size: 12px; color: var(--text-muted);">استثمر بنجاح واحصل على أرباح يومية</p>
-            <div class="quick-actions">
-                <button class="btn btn-primary" onclick="openModal('depositModal')"><i class="fa-solid fa-wallet"></i> إيداع</button>
-                <button class="btn btn-secondary" onclick="openModal('withdrawModal')"><i class="fa-solid fa-arrow-up-from-bracket"></i> سحب</button>
-                <button class="btn btn-secondary" onclick="openModal('kycModal')"><i class="fa-solid fa-id-card"></i> توثيق</button>
-            </div>
-        </div>
-
-        <!-- Daily Tasks & Timer -->
+    <!-- MAIN HOME PAGE VIEW -->
+    <div id="page-home" class="page-view active">
+        <!-- Candlestick Chart -->
         <div class="section-card">
-            <div class="section-title"><i class="fa-solid fa-clock"></i> المهام اليومية والعداد</div>
-            <div class="task-card">
-                <div>
-                    <h4 style="font-size: 14px;">مهمة التداول اليومية</h4>
-                    <p style="font-size: 11px; color: var(--text-muted);">المتبقي على تجديد المهام والأرباح:</p>
+            <div class="section-header"><i class="fa-solid fa-chart-candlestick"></i> سوق تداول الأسهم والعملات المباشر</div>
+            <div style="height: 320px; width: 100%;">
+                <div class="tradingview-widget-container" style="height:100%;width:100%">
+                    <div id="tradingview_chart" style="height:100%;width:100%"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                    <script type="text/javascript">
+                        new TradingView.widget({
+                            "autosize": true,
+                            "symbol": "BINANCE:BTCUSDT",
+                            "interval": "D",
+                            "timezone": "Etc/UTC",
+                            "theme": "dark",
+                            "style": "1",
+                            "locale": "ar",
+                            "toolbar_bg": "#f1f3f6",
+                            "enable_publishing": false,
+                            "hide_side_toolbar": false,
+                            "container_id": "tradingview_chart"
+                        });
+                    </script>
                 </div>
-                <div class="timer-box" id="dailyTimer">23:59:59</div>
             </div>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="claimDailyReward()">مطالبة بالربح اليومي</button>
         </div>
 
-        <!-- Live Trading Market -->
+        <!-- Daily Tasks -->
         <div class="section-card">
-            <div class="section-title"><i class="fa-solid fa-globe"></i> سوق التداول المباشر</div>
-            <div class="tradingview-widget-container">
-                <div class="tradingview-widget-container__widget"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-                {
-                    "symbols": [
-                        { "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" },
-                        { "proName": "BITSTAMP:ETHUSD", "title": "Ethereum" },
-                        { "proName": "BINANCE:USDTTRX", "title": "TRON USDT" }
-                    ],
-                    "colorTheme": "dark",
-                    "isTransparent": true,
-                    "locale": "ar"
-                }
+            <div class="section-header"><i class="fa-solid fa-list-check"></i> المهام اليومية</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">قم بالاستثمار أولاً لتفعيل زر استلام الأرباح اليومية.</p>
+            <button class="btn btn-gold" onclick="claimDailyTask()"><i class="fa-solid fa-hand-holding-dollar"></i> استلام المهمة اليومية</button>
+        </div>
+    </div>
+
+    <!-- DEPOSIT PAGE VIEW -->
+    <div id="page-deposit" class="page-view">
+        <div class="section-card" style="text-align: center;">
+            <div class="section-header"><i class="fa-solid fa-qrcode"></i> إيداع رصيد (BEP20 / BingX)</div>
+            <p style="font-size: 12px; color: var(--text-muted);">امسح الـ QR أو انسخ عنوان المحفظة أدناه لتحويل المبلغ:</p>
+            
+            <div class="qr-container">
+                <img src="1000436512_8172d5.png" alt="QR Code Deposit">
+            </div>
+
+            <div class="form-group">
+                <label>رابط المحفظة المقبولة:</label>
+                <input type="text" readonly value="0x7288dcac07613f69b7ab1be56996849bede68e03" style="text-align: center; color: var(--gold); font-weight: bold;">
+            </div>
+
+            <form onsubmit="submitDeposit(event)">
+                <div class="form-group">
+                    <label>المبلغ المراد شحنه ($):</label>
+                    <input type="number" required id="depAmount" placeholder="أدخل المبلغ...">
+                </div>
+                <button type="submit" class="btn btn-gold">إرسال طلب الإيداع</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- INVESTMENTS PAGE VIEW -->
+    <div id="page-investments" class="page-view">
+        <div class="section-card">
+            <div class="section-header"><i class="fa-solid fa-vault"></i> خطط الاستثمار المتاحة</div>
+            <div class="plans-grid">
+                <!-- 13 Investment Plans -->
+                <script>
+                    const plans = [10, 30, 50, 100, 150, 300, 500, 750, 1000, 1200, 1500, 1750, 2000];
+                    plans.forEach(p => {
+                        document.write(`
+                            <div class="plan-card">
+                                <div style="font-size: 11px; color: var(--text-muted);">خطة استثمار</div>
+                                <div class="plan-price">$${p}</div>
+                                <button class="btn btn-gold" style="padding: 6px; font-size: 12px;" onclick="investPlan(${p})">استثمار الآن</button>
+                            </div>
+                        `);
+                    });
                 </script>
             </div>
         </div>
     </div>
 
-    <!-- Deposit Modal -->
-    <div class="modal" id="depositModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('depositModal')">&times;</span>
-            <h3>إيداع الأموال (USDT TRC20)</h3>
-            <p style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">حول للمحفظة التالية ثم أرفق إشعار التحويل:</p>
-            <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 6px; font-size: 11px; color: var(--gold); word-break: break-all; margin: 10px 0;">
-                TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t
+    <!-- WITHDRAW PAGE VIEW -->
+    <div id="page-withdraw" class="page-view">
+        <div class="section-card">
+            <div class="section-header"><i class="fa-solid fa-money-bill-transfer"></i> سحب الأرباح</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">ملاحظة: عمليات السحب متاحة مرة واحدة كل 7 أيام.</p>
+            
+            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; text-align: center; margin-bottom: 15px;">
+                <div style="font-size: 11px; color: var(--text-muted);">المتبقي على موعد السحب القادم:</div>
+                <div id="withdrawCountdown" style="font-size: 18px; font-weight: 800; color: var(--gold); font-family: monospace;">6 أيام 23:59:59</div>
             </div>
-            <form onsubmit="handleDeposit(event)">
-                <div class="form-group">
-                    <label>المبلغ (USDT):</label>
-                    <input type="number" id="depAmount" required placeholder="100">
-                </div>
-                <div class="form-group">
-                    <label>صورة إشعار التحويل:</label>
-                    <input type="file" accept="image/*" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">تأكيد طلب الإيداع</button>
-            </form>
-        </div>
-    </div>
 
-    <!-- KYC Modal with File Upload -->
-    <div class="modal" id="kycModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('kycModal')">&times;</span>
-            <h3>توثيق الهوية (KYC)</h3>
-            <form onsubmit="handleKYC(event)">
+            <form onsubmit="submitWithdraw(event)">
                 <div class="form-group">
-                    <label>الاسم الثلاثي الكامل:</label>
-                    <input type="text" id="kycName" required placeholder="محمد أحمد...">
+                    <label>اختر طريقة السحب:</label>
+                    <select required>
+                        <option value="USDT-BEP20">USDT - BEP20</option>
+                        <option value="USDT-TRC20">USDT - TRC20</option>
+                        <option value="BingX">BingX UID</option>
+                        <option value="Payeer">Payeer Wallet</option>
+                        <option value="Binance">Binance Pay ID</option>
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label>صورة الهوية / الجواز (أمامي):</label>
-                    <input type="file" accept="image/*" required>
-                </div>
-                <div class="form-group">
-                    <label>صورة الهوية (خلفي):</label>
-                    <input type="file" accept="image/*" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">رفع وثائق التوثيق</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Withdraw Modal -->
-    <div class="modal" id="withdrawModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('withdrawModal')">&times;</span>
-            <h3>طلب سحب الأرباح</h3>
-            <form onsubmit="handleWithdraw(event)">
-                <div class="form-group">
-                    <label>عنوان محفظتك (USDT TRC20):</label>
-                    <input type="text" required placeholder="T...">
+                    <label>عنوان المحفظة / رقم الحساب:</label>
+                    <input type="text" required placeholder="أدخل العنوان هنا...">
                 </div>
                 <div class="form-group">
                     <label>المبلغ المراد سحبه ($):</label>
-                    <input type="number" id="withAmount" required placeholder="50">
+                    <input type="number" required placeholder="50">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">تأكيد السحب</button>
+                <button type="submit" class="btn btn-gold">تأكيد طلب السحب</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ACCOUNT & KYC PAGE VIEW -->
+    <div id="page-account" class="page-view">
+        <div class="section-card">
+            <div class="section-header"><i class="fa-solid fa-user-gear"></i> ملف الحساب والتوثيق</div>
+            
+            <div style="margin-bottom: 15px;">
+                <div style="font-size: 12px; color: var(--text-muted);">البريد الإلكتروني المسجل:</div>
+                <div id="accEmailDisplay" style="font-size: 15px; font-weight: 700; color: #fff;">-</div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">حالة التوثيق (KYC):</div>
+                <span id="kycStatusBadge" class="badge badge-pending">قيد المراجعة</span>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid var(--card-border); margin: 15px 0;">
+
+            <div class="section-header"><i class="fa-solid fa-id-card"></i> تقديم طلب التوثيق</div>
+            <form onsubmit="submitKYC(event)">
+                <div class="form-group">
+                    <label>الاسم الكامل:</label>
+                    <input type="text" required placeholder="الاسم كما في الهوية...">
+                </div>
+                <div class="form-group">
+                    <label>صورة الهوية / الجواز:</label>
+                    <input type="file" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn btn-gold">رفع وثائق التوثيق</button>
             </form>
         </div>
     </div>
 
     <!-- Bottom Navigation -->
-    <div class="bottom-bar">
-        <div class="nav-tab active"><i class="fa-solid fa-house"></i>الرئيسية</div>
-        <div class="nav-tab" onclick="openModal('depositModal')"><i class="fa-solid fa-wallet"></i>إيداع</div>
-        <div class="nav-tab" onclick="openModal('withdrawModal')"><i class="fa-solid fa-money-bill-transfer"></i>سحب</div>
-        <div class="nav-tab" onclick="openModal('kycModal')"><i class="fa-solid fa-user-shield"></i>توثيق</div>
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showPage('home', this)"><i class="fa-solid fa-house"></i>الرئيسية</div>
+        <div class="nav-item" onclick="showPage('deposit', this)"><i class="fa-solid fa-qrcode"></i>إيداع</div>
+        <div class="nav-item" onclick="showPage('investments', this)"><i class="fa-solid fa-vault"></i>الاستثمارات</div>
+        <div class="nav-item" onclick="showPage('withdraw', this)"><i class="fa-solid fa-money-bill-transfer"></i>سحب</div>
+        <div class="nav-item" onclick="showPage('account', this)"><i class="fa-solid fa-user"></i>الحساب</div>
     </div>
 
     <script>
-        // Check Login Status
-        if(localStorage.getItem('user_logged_in') === 'true') {
+        // Check Auth Status
+        if(localStorage.getItem('isLoggedIn') === 'true') {
             document.getElementById('authOverlay').style.display = 'none';
+            document.getElementById('accEmailDisplay').innerText = localStorage.getItem('userEmail') || 'user@mail.com';
         }
 
         function handleAuth(e) {
             e.preventDefault();
-            const pass = document.getElementById('authPass').value;
-            const confirm = document.getElementById('authPassConfirm').value;
-            if(pass !== confirm) {
+            const email = document.getElementById('userEmailInput').value;
+            const p1 = document.getElementById('userPass').value;
+            const p2 = document.getElementById('userPassConfirm').value;
+
+            if(p1 !== p2) {
                 alert("كلمتا السر غير متطابقتين!");
                 return;
             }
-            localStorage.setItem('user_logged_in', 'true');
+
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userEmail', email);
+            document.getElementById('accEmailDisplay').innerText = email;
             document.getElementById('authOverlay').style.display = 'none';
-            alert("تم تسجيل الدخول بنجاح!");
+            alert("تم تسجيل الدخول بنجاح");
         }
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        // Navigation Engine
+        function showPage(pageId, element) {
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            element.classList.add('active');
+        }
 
-        function handleDeposit(e) {
+        // Form Handlers
+        function submitDeposit(e) {
             e.preventDefault();
-            alert("تم إرسال طلب الإيداع مع صورة التحويل بنجاح! بانتظار موافقة الأدمن.");
-            closeModal('depositModal');
+            alert("تم العملية بقيد المراجعة");
+            document.getElementById('depAmount').value = '';
         }
 
-        function handleKYC(e) {
+        function investPlan(amount) {
+            alert("تم العملية بقيد المراجعة");
+        }
+
+        function submitWithdraw(e) {
             e.preventDefault();
-            alert("تم رفع وثائق الهوية بنجاح! جاري مراجعة الطلب من قبل الإدارة.");
-            closeModal('kycModal');
+            alert("تم العملية بقيد المراجعة");
         }
 
-        function handleWithdraw(e) {
+        function submitKYC(e) {
             e.preventDefault();
-            alert("تم إرسال طلب السحب للإدارة بنجاح!");
-            closeModal('withdrawModal');
+            alert("تم العملية بقيد المراجعة");
         }
 
-        function claimDailyReward() {
-            let bal = parseFloat(localStorage.getItem('nexttrade_balance') || '0.00');
-            bal += 5.00;
-            localStorage.setItem('nexttrade_balance', bal);
-            document.getElementById('headerBalance').innerText = '$' + bal.toFixed(2);
-            alert("مبروك! تم إضافة 5$ أرباح المهمة اليومية لحسابك.");
+        function claimDailyTask() {
+            const hasDeposit = localStorage.getItem('hasActiveInvestment');
+            if(!hasDeposit) {
+                alert("يجب الإيداع والاستثمار أولاً لتتمكن من استلام المهام اليومية.");
+            } else {
+                alert("تم استلام أرباح المهمة اليومية بنجاح!");
+            }
         }
 
-        // Daily Countdown Timer Script
-        function startTimer() {
-            let time = 86400; // 24 hours in seconds
-            setInterval(() => {
-                let hours = Math.floor(time / 3600);
-                let minutes = Math.floor((time % 3600) / 60);
-                let seconds = time % 60;
-                document.getElementById('dailyTimer').innerText = 
-                    `${hours < 10 ? '0'+hours : hours}:${minutes < 10 ? '0'+minutes : minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
-                if(time > 0) time--;
-            }, 1000);
+        // Admin Approval Functions (To be triggered from Admin later)
+        function setVerifiedStatus(isVerified) {
+            const badge = document.getElementById('kycStatusBadge');
+            if(isVerified) {
+                badge.className = "badge badge-verified";
+                badge.innerText = "تم التحقق";
+            } else {
+                badge.className = "badge badge-pending";
+                badge.innerText = "قيد المراجعة";
+            }
         }
-        startTimer();
     </script>
 </body>
-                        </html>
+    </html>
