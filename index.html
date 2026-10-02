@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NextTrade | منصة التداول والاستثمار</title>
-    <!-- FontAwesome & Google Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -13,7 +12,6 @@
             --card-bg: #121824;
             --card-border: #1e2638;
             --gold: #f0b90b;
-            --gold-light: #fcd535;
             --gold-glow: rgba(240, 185, 11, 0.15);
             --text-main: #f1f5f9;
             --text-muted: #8492a6;
@@ -21,365 +19,147 @@
             --red: #f6465d;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Cairo', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 80px; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            padding-bottom: 70px;
+        /* Auth Screen Overlay */
+        #authOverlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-dark); z-index: 5000;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
         }
+        .auth-card {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 16px; padding: 24px; width: 100%; max-width: 400px;
+        }
+        .auth-header { text-align: center; margin-bottom: 20px; }
+        .auth-header h2 { color: var(--gold); font-size: 22px; }
 
-        /* Top Header */
+        /* Top Bar */
         .top-bar {
-            background: rgba(18, 24, 36, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--card-border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            background: rgba(18, 24, 36, 0.9); backdrop-filter: blur(10px);
+            padding: 12px 16px; display: flex; justify-content: space-between;
+            align-items: center; border-bottom: 1px solid var(--card-border);
+            position: sticky; top: 0; z-index: 100;
         }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 800; color: var(--gold); }
+        .balance-badge { background: var(--gold-glow); border: 1px solid rgba(240, 185, 11, 0.3); color: var(--gold); padding: 4px 12px; border-radius: 20px; font-weight: 700; }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--gold);
-        }
-
-        .logo i {
-            font-size: 20px;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .balance-badge {
-            background: var(--gold-glow);
-            border: 1px solid rgba(240, 185, 11, 0.3);
-            color: var(--gold);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        /* Hero Banner */
+        /* General Layout */
+        .container { padding: 16px; }
         .hero-banner {
-            margin: 16px;
-            padding: 20px;
             background: linear-gradient(135deg, #1e2638 0%, #121824 100%);
-            border-radius: 16px;
-            border: 1px solid var(--card-border);
-            position: relative;
-            overflow: hidden;
+            padding: 20px; border-radius: 16px; border: 1px solid var(--card-border); margin-bottom: 16px;
         }
+        .quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
 
-        .hero-banner::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(240, 185, 11, 0.08) 0%, transparent 60%);
-            pointer-events: none;
-        }
+        .btn { border: none; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-primary { background: var(--gold); color: #000; }
+        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid var(--card-border); }
 
-        .hero-title {
-            font-size: 20px;
-            font-weight: 800;
-            margin-bottom: 6px;
-        }
+        .section-card { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--card-border); padding: 16px; margin-bottom: 16px; }
+        .section-title { font-size: 15px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 
-        .hero-subtitle {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-        }
+        /* Task & Timer Card */
+        .task-card { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .timer-box { font-size: 18px; font-weight: 800; color: var(--gold); letter-spacing: 1px; }
 
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
+        /* Form Inputs & Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; padding: 16px; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; width: 100%; max-width: 420px; position: relative; }
+        .close-btn { position: absolute; left: 16px; top: 16px; color: var(--text-muted); font-size: 20px; cursor: pointer; }
 
-        .btn {
-            border: none;
-            padding: 10px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: 0.2s;
-        }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size: 13px; }
 
-        .btn-primary {
-            background: var(--gold);
-            color: #000;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-main);
-            border: 1px solid var(--card-border);
-        }
-
-        /* Live Ticker Widget */
-        .ticker-container {
-            margin: 0 16px 16px 16px;
-            background: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--card-border);
-            padding: 12px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .section-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-muted);
-        }
-
-        /* Section Cards */
-        .section-card {
-            margin: 0 16px 16px 16px;
-            background: var(--card-bg);
-            border-radius: 16px;
-            border: 1px solid var(--card-border);
-            padding: 16px;
-        }
-
-        .plan-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .plan-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .plan-info h4 {
-            font-size: 15px;
-            color: var(--gold);
-        }
-
-        .plan-info p {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        /* Bottom Navigation Bar */
-        .bottom-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--card-bg);
-            border-top: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            z-index: 1000;
-        }
-
-        .nav-tab {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--text-muted);
-            font-size: 10px;
-            text-decoration: none;
-            gap: 4px;
-        }
-
-        .nav-tab.active, .nav-tab:hover {
-            color: var(--gold);
-        }
-
-        .nav-tab i {
-            font-size: 18px;
-        }
-
-        /* Modal Popup */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 20px;
-            width: 100%;
-            max-width: 400px;
-            position: relative;
-        }
-
-        .close-btn {
-            position: absolute;
-            left: 16px; top: 16px;
-            color: var(--text-muted);
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 13px;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--gold);
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 10px;
-        }
+        /* Bottom Nav */
+        .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
+        .nav-tab { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 10px; text-decoration: none; gap: 4px; cursor: pointer; }
+        .nav-tab.active, .nav-tab:hover { color: var(--gold); }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
+    <!-- Auth Overlay (Login / Register) -->
+    <div id="authOverlay">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="fa-solid fa-chart-line" style="font-size: 32px; color: var(--gold);"></i>
+                <h2>NextTrade</h2>
+                <p style="font-size: 12px; color: var(--text-muted);">تسجيل الدخول أو إنشاء حساب جديد</p>
+            </div>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div class="form-group">
+                    <label>البريد الإلكتروني:</label>
+                    <input type="email" id="authEmail" required placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label>كلمة السر:</label>
+                    <input type="password" id="authPass" required placeholder="******">
+                </div>
+                <div class="form-group">
+                    <label>تأكيد كلمة السر:</label>
+                    <input type="password" id="authPassConfirm" required placeholder="******">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">الدخول إلى المنصة</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Header -->
     <div class="top-bar">
         <div class="logo">
             <i class="fa-solid fa-chart-line"></i>
             <span>NextTrade</span>
         </div>
-        <div class="header-actions">
-            <div class="balance-badge">
-                <span id="headerBalance">$0.00</span>
-            </div>
+        <div class="balance-badge">
+            <span id="headerBalance">$0.00</span>
         </div>
     </div>
 
-    <!-- Main Banner -->
-    <div class="hero-banner">
-        <div class="hero-title">تداول واستثمر بأمان</div>
-        <div class="hero-subtitle">احصل على عوائد يومية مضمونة عبر أفضل خطط الاستثمار الذكية</div>
-        <div class="quick-actions">
-            <button class="btn btn-primary" onclick="openModal('depositModal')">
-                <i class="fa-solid fa-wallet"></i> إيداع
-            </button>
-            <button class="btn btn-secondary" onclick="openModal('withdrawModal')">
-                <i class="fa-solid fa-arrow-up-from-bracket"></i> سحب
-            </button>
-            <button class="btn btn-secondary" onclick="openModal('kycModal')">
-                <i class="fa-solid fa-id-card"></i> توثيق
-            </button>
-        </div>
-    </div>
-
-    <!-- Live Trading Widget -->
-    <div class="ticker-container">
-        <div class="section-header">
-            <span class="section-title"><i class="fa-solid fa-globe"></i> الأسواق المباشرة</span>
-        </div>
-        <!-- TradingView Mini Widget -->
-        <div class="tradingview-widget-container">
-          <div class="tradingview-widget-container__widget"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-          {
-          "symbols": [
-            { "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" },
-            { "proName": "BITSTAMP:ETHUSD", "title": "Ethereum" },
-            { "proName": "BINANCE:USDTTRX", "title": "TRON USDT" }
-          ],
-          "showSymbolLogo": true,
-          "colorTheme": "dark",
-          "isTransparent": true,
-          "displayMode": "adaptive",
-          "locale": "ar"
-        }
-          </script>
-        </div>
-    </div>
-
-    <!-- Investment Plans -->
-    <div class="section-card">
-        <div class="section-title"><i class="fa-solid fa-bolt"></i> خطط الاستثمار اليومية</div>
-        <div class="plan-grid">
-            <div class="plan-card">
-                <div class="plan-info">
-                    <h4>الخطة الأساسية</h4>
-                    <p>ربح 10% يومياً | إيداع $50 - $200</p>
-                </div>
-                <button class="btn btn-primary" onclick="investPlan(50)">استثمار</button>
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero-banner">
+            <h3 style="font-size: 18px;">مرحباً بك في منصة NextTrade</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">استثمر بنجاح واحصل على أرباح يومية</p>
+            <div class="quick-actions">
+                <button class="btn btn-primary" onclick="openModal('depositModal')"><i class="fa-solid fa-wallet"></i> إيداع</button>
+                <button class="btn btn-secondary" onclick="openModal('withdrawModal')"><i class="fa-solid fa-arrow-up-from-bracket"></i> سحب</button>
+                <button class="btn btn-secondary" onclick="openModal('kycModal')"><i class="fa-solid fa-id-card"></i> توثيق</button>
             </div>
-            <div class="plan-card">
-                <div class="plan-info">
-                    <h4>الخطة المتقدمة</h4>
-                    <p>ربح 10% يومياً | إيداع $201 - $1000</p>
+        </div>
+
+        <!-- Daily Tasks & Timer -->
+        <div class="section-card">
+            <div class="section-title"><i class="fa-solid fa-clock"></i> المهام اليومية والعداد</div>
+            <div class="task-card">
+                <div>
+                    <h4 style="font-size: 14px;">مهمة التداول اليومية</h4>
+                    <p style="font-size: 11px; color: var(--text-muted);">المتبقي على تجديد المهام والأرباح:</p>
                 </div>
-                <button class="btn btn-primary" onclick="investPlan(200)">استثمار</button>
+                <div class="timer-box" id="dailyTimer">23:59:59</div>
             </div>
-            <div class="plan-card">
-                <div class="plan-info">
-                    <h4>خطة المحترفين VIP</h4>
-                    <p>ربح 10% يومياً | إيداع $1001+</p>
-                </div>
-                <button class="btn btn-primary" onclick="investPlan(1000)">استثمار</button>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="claimDailyReward()">مطالبة بالربح اليومي</button>
+        </div>
+
+        <!-- Live Trading Market -->
+        <div class="section-card">
+            <div class="section-title"><i class="fa-solid fa-globe"></i> سوق التداول المباشر</div>
+            <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                {
+                    "symbols": [
+                        { "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" },
+                        { "proName": "BITSTAMP:ETHUSD", "title": "Ethereum" },
+                        { "proName": "BINANCE:USDTTRX", "title": "TRON USDT" }
+                    ],
+                    "colorTheme": "dark",
+                    "isTransparent": true,
+                    "locale": "ar"
+                }
+                </script>
             </div>
         </div>
     </div>
@@ -389,20 +169,43 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('depositModal')">&times;</span>
             <h3>إيداع الأموال (USDT TRC20)</h3>
-            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">يرجى تحويل المبلغ للعنوان التالي ورفع البيانات:</p>
-            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; font-size: 11px; word-break: break-all; margin-bottom: 12px; color: var(--gold);">
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">حول للمحفظة التالية ثم أرفق إشعار التحويل:</p>
+            <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 6px; font-size: 11px; color: var(--gold); word-break: break-all; margin: 10px 0;">
                 TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t
             </div>
-            <form id="depositForm" onsubmit="handleDeposit(event)">
-                <div class="form-group">
-                    <label>البريد الإلكتروني للتمويل:</label>
-                    <input type="email" id="depEmail" required placeholder="example@gmail.com">
-                </div>
+            <form onsubmit="handleDeposit(event)">
                 <div class="form-group">
                     <label>المبلغ (USDT):</label>
-                    <input type="number" id="depAmount" min="10" required placeholder="50">
+                    <input type="number" id="depAmount" required placeholder="100">
                 </div>
-                <button type="submit" class="submit-btn">تأكيد الإيداع</button>
+                <div class="form-group">
+                    <label>صورة إشعار التحويل:</label>
+                    <input type="file" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">تأكيد طلب الإيداع</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- KYC Modal with File Upload -->
+    <div class="modal" id="kycModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('kycModal')">&times;</span>
+            <h3>توثيق الهوية (KYC)</h3>
+            <form onsubmit="handleKYC(event)">
+                <div class="form-group">
+                    <label>الاسم الثلاثي الكامل:</label>
+                    <input type="text" id="kycName" required placeholder="محمد أحمد...">
+                </div>
+                <div class="form-group">
+                    <label>صورة الهوية / الجواز (أمامي):</label>
+                    <input type="file" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label>صورة الهوية (خلفي):</label>
+                    <input type="file" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">رفع وثائق التوثيق</button>
             </form>
         </div>
     </div>
@@ -412,155 +215,89 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('withdrawModal')">&times;</span>
             <h3>طلب سحب الأرباح</h3>
-            <form id="withdrawForm" onsubmit="handleWithdraw(event)">
+            <form onsubmit="handleWithdraw(event)">
                 <div class="form-group">
-                    <label>عنوان محفظة USDT TRC20 الخاص بك:</label>
-                    <input type="text" id="withAddress" required placeholder="T...">
+                    <label>عنوان محفظتك (USDT TRC20):</label>
+                    <input type="text" required placeholder="T...">
                 </div>
                 <div class="form-group">
                     <label>المبلغ المراد سحبه ($):</label>
-                    <input type="number" id="withAmount" required placeholder="100">
+                    <input type="number" id="withAmount" required placeholder="50">
                 </div>
-                <button type="submit" class="submit-btn">تأكيد طلب السحب</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">تأكيد السحب</button>
             </form>
         </div>
     </div>
 
-    <!-- KYC Modal -->
-    <div class="modal" id="kycModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('kycModal')">&times;</span>
-            <h3>توثيق الهوية (KYC)</h3>
-            <form id="kycForm" onsubmit="handleKYC(event)">
-                <div class="form-group">
-                    <label>الاسم الثلاثي الكامل:</label>
-                    <input type="text" id="kycName" required placeholder="محمد أحمد...">
-                </div>
-                <div class="form-group">
-                    <label>البريد الإلكتروني:</label>
-                    <input type="email" id="kycEmail" required placeholder="example@gmail.com">
-                </div>
-                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">سيتم التواصل معك لرفع صور الوثائق للتفعيل.</p>
-                <button type="submit" class="submit-btn">إرسال طلب التوثيق</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Navigation -->
     <div class="bottom-bar">
-        <a href="#" class="nav-tab active"><i class="fa-solid fa-house"></i>الرئيسية</a>
-        <a href="#" class="nav-tab" onclick="openModal('depositModal')"><i class="fa-solid fa-wallet"></i>إيداع</a>
-        <a href="#" class="nav-tab" onclick="openModal('withdrawModal')"><i class="fa-solid fa-money-bill-transfer"></i>سحب</a>
-        <a href="#" class="nav-tab" onclick="openModal('kycModal')"><i class="fa-solid fa-user-shield"></i>توثيق</a>
+        <div class="nav-tab active"><i class="fa-solid fa-house"></i>الرئيسية</div>
+        <div class="nav-tab" onclick="openModal('depositModal')"><i class="fa-solid fa-wallet"></i>إيداع</div>
+        <div class="nav-tab" onclick="openModal('withdrawModal')"><i class="fa-solid fa-money-bill-transfer"></i>سحب</div>
+        <div class="nav-tab" onclick="openModal('kycModal')"><i class="fa-solid fa-user-shield"></i>توثيق</div>
     </div>
 
     <script>
-        // Init Balance
-        function updateUI() {
-            const balance = parseFloat(localStorage.getItem('nexttrade_balance') || '0.00');
-            document.getElementById('headerBalance').innerText = '$' + balance.toFixed(2);
+        // Check Login Status
+        if(localStorage.getItem('user_logged_in') === 'true') {
+            document.getElementById('authOverlay').style.display = 'none';
         }
 
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
+        function handleAuth(e) {
+            e.preventDefault();
+            const pass = document.getElementById('authPass').value;
+            const confirm = document.getElementById('authPassConfirm').value;
+            if(pass !== confirm) {
+                alert("كلمتا السر غير متطابقتين!");
+                return;
+            }
+            localStorage.setItem('user_logged_in', 'true');
+            document.getElementById('authOverlay').style.display = 'none';
+            alert("تم تسجيل الدخول بنجاح!");
         }
 
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // Handle Deposit Request
         function handleDeposit(e) {
             e.preventDefault();
-            const email = document.getElementById('depEmail').value;
-            const amt = parseFloat(document.getElementById('depAmount').value);
-
-            const depositData = { action: 'Deposit', amount: amt, email: email, date: new Date().toISOString() };
-
-            // Save Pending Deposit in Sync
-            localStorage.setItem('nexttrade_pending_deposit', JSON.stringify(depositData));
-
-            // Send to Formspree Email
-            fetch('https://formspree.io/f/mdekrqbj', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(depositData)
-            });
-
-            alert(`تم تسجيل طلب الإيداع بمبلغ $${amt}! بانتظار إدارة المنصة للتحقق.`);
+            alert("تم إرسال طلب الإيداع مع صورة التحويل بنجاح! بانتظار موافقة الأدمن.");
             closeModal('depositModal');
-            updateUI();
         }
 
-        // Handle Investment Action (10% gross, 8% user, 2% admin commission)
-        function investPlan(amount) {
-            let balance = parseFloat(localStorage.getItem('nexttrade_balance') || '0.00');
-            if (balance < amount) {
-                alert("رصيدك الحالي غير كافٍ لتفعيل هذه الباقة. يرجى إتمام عملية الإيداع أولاً.");
-                openModal('depositModal');
-                return;
-            }
-
-            // Deduct invested amount
-            balance -= amount;
-            localStorage.setItem('nexttrade_balance', balance.toString());
-
-            // Calculate return
-            const grossProfit = amount * 0.10; // 10%
-            const userNetProfit = amount * 0.08; // 8% user
-            const adminCommission = amount * 0.02; // 2% admin
-
-            alert(`تم الاشتراك بنجاح في باقة $${amount}!\nربحك اليومي الصافي (8%): $${userNetProfit.toFixed(2)}`);
-            updateUI();
-        }
-
-        // Handle Withdraw Request
-        function handleWithdraw(e) {
-            e.preventDefault();
-            const amt = parseFloat(document.getElementById('withAmount').value);
-            let balance = parseFloat(localStorage.getItem('nexttrade_balance') || '0.00');
-
-            if (amt > balance) {
-                alert("المبلغ المطلوب أكبر من رصيدك المتاح للسحب!");
-                return;
-            }
-
-            const withdrawData = { action: 'Withdraw', amount: amt, address: document.getElementById('withAddress').value };
-
-            // Send to Formspree Email
-            fetch('https://formspree.io/f/mdekrqbj', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(withdrawData)
-            });
-
-            alert("تم إرسال طلب السحب بنجاح للأدمن للمراجعة والصرف!");
-            closeModal('withdrawModal');
-        }
-
-        // Handle KYC Request
         function handleKYC(e) {
             e.preventDefault();
-            const name = document.getElementById('kycName').value;
-            const email = document.getElementById('kycEmail').value;
-
-            const kycData = { action: 'KYC Verification', fullName: name, email: email };
-            localStorage.setItem('nexttrade_kyc_data', JSON.stringify(kycData));
-            localStorage.setItem('nexttrade_kyc_status', 'pending');
-
-            // Send to Formspree Email
-            fetch('https://formspree.io/f/mdekrqbj', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(kycData)
-            });
-
-            alert("تم إرسال بيانات التوثيق الخاصة بك بنجاح لقسم التوثيق والأدمن!");
+            alert("تم رفع وثائق الهوية بنجاح! جاري مراجعة الطلب من قبل الإدارة.");
             closeModal('kycModal');
         }
 
-        // Load UI on launch
-        updateUI();
+        function handleWithdraw(e) {
+            e.preventDefault();
+            alert("تم إرسال طلب السحب للإدارة بنجاح!");
+            closeModal('withdrawModal');
+        }
+
+        function claimDailyReward() {
+            let bal = parseFloat(localStorage.getItem('nexttrade_balance') || '0.00');
+            bal += 5.00;
+            localStorage.setItem('nexttrade_balance', bal);
+            document.getElementById('headerBalance').innerText = '$' + bal.toFixed(2);
+            alert("مبروك! تم إضافة 5$ أرباح المهمة اليومية لحسابك.");
+        }
+
+        // Daily Countdown Timer Script
+        function startTimer() {
+            let time = 86400; // 24 hours in seconds
+            setInterval(() => {
+                let hours = Math.floor(time / 3600);
+                let minutes = Math.floor((time % 3600) / 60);
+                let seconds = time % 60;
+                document.getElementById('dailyTimer').innerText = 
+                    `${hours < 10 ? '0'+hours : hours}:${minutes < 10 ? '0'+minutes : minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+                if(time > 0) time--;
+            }, 1000);
+        }
+        startTimer();
     </script>
 </body>
-    </html>
+                        </html>
