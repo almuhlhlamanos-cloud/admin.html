@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexTrade | منصة التداول والاستثمار</title>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #080a0f;
+            --card-bg: #121824;
+            --card-border: #1e2638;
+            --gold: #f0b90b;
+            --gold-light: #fcd535;
+            --gold-glow: rgba(240, 185, 11, 0.15);
+            --text-main: #f1f5f9;
+            --text-muted: #8492a6;
+            --green: #0ecb81;
+            --red: #f6465d;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; padding-bottom: 70px; }
+
+        /* Header Navigation */
+        .top-nav {
+            background: #0d1117;
+            border-bottom: 1px solid var(--card-border);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand i { font-size: 24px; color: var(--gold); }
+        .brand h1 { font-size: 18px; font-weight: 800; color: #fff; }
+        .brand h1 span { color: var(--gold); }
+
+        .user-balance-badge {
+            background: var(--gold-glow);
+            border: 1px solid var(--gold);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        /* Container */
+        .container { max-width: 600px; margin: 0 auto; padding: 20px 15px; }
+
+        /* Wallet Section */
+        .wallet-card {
+            background: linear-gradient(135deg, #121824 0%, #0d1117 100%);
+            border: 1px solid var(--gold);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px var(--gold-glow);
+            margin-bottom: 20px;
+        }
+        .wallet-title { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
+        .wallet-amount { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 15px; }
+        .wallet-actions { display: flex; gap: 10px; justify-content: center; }
+        .btn-wallet {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-deposit { background: var(--gold); color: #000; }
+        .btn-withdraw { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--card-border); }
+
+        /* Section Titles */
+        .section-header { margin: 20px 0 12px; font-size: 16px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: space-between; }
+
+        /* Investment Cards */
+        .plans-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px; }
+        .plan-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: 0.2s;
+        }
+        .plan-card:hover { border-color: var(--gold); }
+        .plan-price { font-size: 20px; font-weight: 800; color: var(--gold); margin: 5px 0; }
+        .plan-profit { font-size: 11px; color: var(--green); margin-bottom: 10px; }
+        .plan-fee-note { font-size: 10px; color: var(--text-muted); margin-bottom: 10px; }
+        .btn-invest {
+            width: 100%;
+            padding: 8px;
+            background: rgba(240, 185, 11, 0.1);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-invest:hover { background: var(--gold); color: #000; }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            display: none;
+            align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 450px;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .modal-header h3 { font-size: 16px; color: #fff; }
+        .close-btn { cursor: pointer; color: var(--text-muted); font-size: 18px; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
+        .form-group input {
+            width: 100%; padding: 10px; background: #080a0f; border: 1px solid var(--card-border);
+            border-radius: 8px; color: #fff; font-size: 14px;
+        }
+        .submit-btn {
+            width: 100%; padding: 12px; background: var(--gold); color: #000; font-weight: bold;
+            border: none; border-radius: 8px; cursor: pointer; font-size: 14px;
+        }
+
+        /* Bottom Nav */
+        .bottom-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #0d1117;
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 90;
+        }
+        .nav-tab { color: var(--text-muted); text-align: center; text-decoration: none; font-size: 10px; }
+        .nav-tab i { font-size: 18px; display: block; margin-bottom: 3px; }
+        .nav-tab.active { color: var(--gold); }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="top-nav">
+        <div class="brand">
+            <i class="fa-solid fa-chart-line"></i>
+            <h1>Nex<span>Trade</span></h1>
+        </div>
+        <div class="user-balance-badge" id="headerBalance">$0.00</div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+
+        <!-- Wallet Dashboard -->
+        <div class="wallet-card">
+            <div class="wallet-title">إجمالي الرصيد القابل للسحب</div>
+            <div class="wallet-amount" id="mainBalance">$0.00</div>
+            <div class="wallet-actions">
+                <button class="btn-wallet btn-deposit" onclick="openModal('depositModal')"><i class="fa-solid fa-plus"></i> إيداع</button>
+                <button class="btn-wallet btn-withdraw" onclick="openModal('withdrawModal')"><i class="fa-solid fa-arrow-up-from-bracket"></i> سحب الأرباح</button>
+            </div>
+        </div>
+
+        <!-- Live Chart -->
+        <div class="section-header">
+            <span>سوق التداول المباشر</span>
+            <span style="font-size: 11px; color: var(--green);"><i class="fa-solid fa-circle" style="font-size: 8px;"></i> مباشر</span>
+        </div>
+        <div style="border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden; margin-bottom: 20px;">
+            <iframe src="https://s.tradingview.com/embed-widget/mini-symbol-overview/?locale=ar&symbol=BINANCE%3ABTCUSDT" style="width: 100%; height: 220px; border: none;"></iframe>
+        </div>
+
+        <!-- Investment Packages -->
+        <div class="section-header">
+            <span>باقات الاستثمار (ربح 10%)</span>
+            <span style="font-size: 11px; color: var(--gold);">توزيع أسبوعي</span>
+        </div>
+
+        <div class="plans-grid">
+            <!-- $10 Plan -->
+            <div class="plan-card">
+                <div>باقة $10</div>
+                <div class="plan-price">$10</div>
+                <div class="plan-profit">+ $0.80 صافي للمستخدم (8%)</div>
+                <div class="plan-fee-note">$0.20 عمولة منصة (2%)</div>
+                <button class="btn-invest" onclick="investPlan(10)">استثمار الآن</button>
+            </div>
+
+            <!-- $30 Plan -->
+            <div class="plan-card">
+                <div>باقة $30</div>
+                <div class="plan-price">$30</div>
+                <div class="plan-profit">+ $2.40 صافي للمستخدم (8%)</div>
+                <div class="plan-fee-note">$0.60 عمولة منصة (2%)</div>
+                <button class="btn-invest" onclick="investPlan(30)">استثمار الآن</button>
+            </div>
+
+            <!-- $50 Plan -->
+            <div class="plan-card">
+                <div>باقة $50</div>
+                <div class="plan-price">$50</div>
+                <div class="plan-profit">+ $4.00 صافي للمستخدم (8%)</div>
+                <div class="plan-fee-note">$1.00 عمولة منصة (2%)</div>
+                <button class="btn-invest" onclick="investPlan(50)">استثمار الآن</button>
+            </div>
+
+            <!-- $100 Plan -->
+            <div class="plan-card">
+                <div>باقة $100</div>
+                <div class="plan-price">$100</div>
+                <div class="plan-profit">+ $8.00 صافي للمستخدم (8%)</div>
+                <div class="plan-fee-note">$2.00 عمولة منصة (2%)</div>
+                <button class="btn-invest" onclick="investPlan(100)">استثمار الآن</button>
+            </div>
+        </div>
+
+        <!-- KYC Button Section -->
+        <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 15px; text-align: center;">
+            <h4 style="font-size: 14px; margin-bottom: 5px;">توثيق الحساب (KYC)</h4>
+            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">قم بتوثيق حسابك لتتمكن من إتمام عمليات السحب بآمان.</p>
+            <button class="submit-btn" style="background: rgba(240, 185, 11, 0.15); color: var(--gold); border: 1px solid var(--gold);" onclick="openModal('kycModal')">رفع أوراق التوثيق</button>
+        </div>
+
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>طلب إيداع جديد (USDT TRC20)</h3>
+                <span class="close-btn" onclick="closeModal('depositModal')">&times;</span>
+            </div>
+            <form id="depositForm" onsubmit="handleDeposit(event)">
+                <div class="form-group">
+                    <label>عنوان المحفظة للتحويل (TRC20):</label>
+                    <input type="text" value="TYx9K1234567890abcdefg1234567890" readonly style="color: var(--gold); text-align: center; font-weight: bold;">
+                </div>
+                <div class="form-group">
+                    <label>المبلغ المراد إيداعه ($):</label>
+                    <input type="number" id="depositAmount" min="10" placeholder="مثال: 100" required>
+                </div>
+                <div class="form-group">
+                    <label>بريدك الإلكتروني لمتابعة الطلب:</label>
+                    <input type="email" id="userEmail" placeholder="yourname@gmail.com" required>
+                </div>
+                <button type="submit" class="submit-btn">تأكيد ورسل الإيداع للأدمن</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Withdrawal Modal -->
+    <div id="withdrawModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>سحب الأرباح والأصل</h3>
+                <span class="close-btn" onclick="closeModal('withdrawModal')">&times;</span>
+            </div>
+            <form id="withdrawForm" onsubmit="handleWithdraw(event)">
+                <p style="font-size: 11px; color: var(--gold); margin-bottom: 12px;">يتم الخصم التلقائي: 8% صافي أرباح لك و2% عمولة المنصة عند إتمام المعالجة الأسبوعية.</p>
+                <div class="form-group">
+                    <label>المبلغ المطلوب سحبه ($):</label>
+                    <input type="number" id="withdrawAmount" placeholder="أدخل المبلغ" required>
+                </div>
+                <div class="form-group">
+                    <label>عنوان محفظتك (USDT TRC20):</label>
+                    <input type="text" placeholder="أدخل رابط المحفظة الخاصة بك" required>
+                </div>
+                <button type="submit" class="submit-btn">إرسال طلب السحب للأدمن</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- KYC Modal -->
+    <div id="kycModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>توثيق الهوية (KYC)</h3>
+                <span class="close-btn" onclick="closeModal('kycModal')">&times;</span>
+            </div>
+            <form id="kycForm" onsubmit="handleKYC(event)">
+                <div class="form-group">
+                    <label>الاسم الثلاثي الكامل:</label>
+                    <input type="text" id="kycName" placeholder="كما هو مكتوب في الهوية" required>
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني:</label>
+                    <input type="email" id="kycEmail" placeholder="your@email.com" required>
+                </div>
+                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">سيتم إرسال بيانات التوثيق مباشرة إلى إدارة المنصة لمراجعتها.</p>
+                <button type="submit" class="submit-btn">إرسال بيانات التوثيق</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-bar">
+        <a href="#" class="nav-tab active"><i class="fa-solid fa-house"></i>الرئيسية</a>
+        <a href="#" class="nav-tab" onclick="openModal('depositModal')"><i class="fa-solid fa-wallet"></i>إيداع</a>
+        <a href="#" class="nav-tab" onclick="openModal('withdrawModal')"><i class="fa-solid fa-arrow-up-from-bracket"></i>سحب</a>
+        <a href="#" class="nav-tab" onclick="openModal('kycModal')"><i class="fa-solid fa-id-card"></i>التوثيق</a>
+    </nav>
+
+    <script>
+        // Init Balance
+        function updateUI() {
+            const balance = parseFloat(localStorage.getItem('nexttrade_balance') || '0.00');
+            document.getElementById('mainBalance').innerText = `$${balance.toFixed(2)}`;
+            document.getElementById('headerBalance').innerText = `$${balance.toFixed(2)}`;
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // Handle Deposit Request
+        function handleDeposit(e) {
+            e.preventDefault();
+            const amt = parseFloat(document.getElementById('depositAmount').value);
+            const email = document.getElementById('userEmail').value;
+
+            // Save Pending Deposit in Sync
+            const depositData = { amount: amt, email: email, status: 'pending', date: new Date().toLocaleString() };
+            localStorage.setItem('nexttrade_pending_deposit', JSON.stringify(depositData));
+
+            alert(`تم تسجيل طلب الإيداع بمبلغ $${amt} بنجاح! سيتم رفعه لإدارة المنصة للتحقق.`);
+            closeModal('depositModal');
+            updateUI();
+        }
+
+        // Handle Investment Action (10% gross, 8% user, 2% admin)
+        function investPlan(amount) {
+            let balance = parseFloat(localStorage.getItem('nexttrade_balance') || '0.00');
+            if(balance < amount) {
+                alert("رصيدك الحالي غير كافٍ لتفعيل هذه الباقة. يرجى إتمام عملية الإيداع أولاً.");
+                openModal('depositModal');
+                return;
+            }
+
+            // Deduct invested amount
+            balance -= amount;
+            localStorage.setItem('nexttrade_balance', balance);
+
+            // Calculate return
+            const grossProfit = amount * 0.10; // 10%
+            const userNetProfit = amount * 0.08; // 8% user
+            const adminCommission = amount * 0.02; // 2% admin
+
+            alert(`تم الاشتراك بنجاح في باقة $${amount}!\nالربح الإجمالي (10%): $${grossProfit}\nصافي أرباحك الأسبوعية عند الصرف (8%): $${userNetProfit}\nعمولة المنصة (2%): $${adminCommission}`);
+            updateUI();
+        }
+
+        // Handle Withdraw Request
+        function handleWithdraw(e) {
+            e.preventDefault();
+            const amt = parseFloat(document.getElementById('withdrawAmount').value);
+            let balance = parseFloat(localStorage.getItem('nexttrade_balance') || '0.00');
+
+            if(amt > balance) {
+                alert("المبلغ المطلوب أكبر من رصيدك المتاح للسحب!");
+                return;
+            }
+
+            alert("تم إرسال طلب السحب بنجاح للأدمن للمراجعة والصرف!");
+            closeModal('withdrawModal');
+        }
+
+        // Handle KYC Request
+        function handleKYC(e) {
+            e.preventDefault();
+            const name = document.getElementById('kycName').value;
+            const email = document.getElementById('kycEmail').value;
+
+            const kycData = { fullName: name, email: email, frontImg: '', backImg: '' };
+            localStorage.setItem('nexttrade_kyc_data', JSON.stringify(kycData));
+            localStorage.setItem('nexttrade_kyc_status', 'pending');
+
+            alert("تم إرسال بيانات التوثيق الخاصة بك بنجاح لقسم التوثيق والأدمن!");
+            closeModal('kycModal');
+        }
+
+        // Load UI on launch
+        updateUI();
+    </script>
+</body>
+</html>
