@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NextTrade | نيكست تريدي</title>
+    <link rel="manifest" href="data:application/manifest+json,{'name':'NextTrade','short_name':'NextTrade','start_url':'/','display':'standalone','background_color':'#0a0d14','theme_color':'#f0b90b'}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
             --bg-dark: #0a0d14;
             --card-bg: #131a26;
             --card-border: #1f2a3d;
             --gold: #f0b90b;
-            --gold-glow: rgba(240, 185, 11, 0.15);
             --text-main: #f1f5f9;
             --text-muted: #8492a6;
             --green: #0ecb81;
@@ -41,7 +42,7 @@
             display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000;
         }
         .app-title { font-size: 20px; font-weight: 800; color: var(--gold); display: flex; align-items: center; gap: 8px; }
-        .btn-download-app { background: rgba(240, 185, 11, 0.1); border: 1px solid var(--gold); color: var(--gold); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 5px; }
+        .btn-download-app { background: rgba(240, 185, 11, 0.1); border: 1px solid var(--gold); color: var(--gold); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 6px; cursor: pointer; }
 
         /* Wallet & Investment Header Stats */
         .header-stats {
@@ -92,9 +93,22 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; text-decoration: none; gap: 4px; cursor: pointer; }
         .nav-item.active { color: var(--gold); font-weight: 700; }
 
-        /* QR Image Styling */
-        .qr-container { text-align: center; margin: 15px 0; background: #fff; padding: 10px; border-radius: 12px; display: inline-block; }
-        .qr-container img { width: 170px; height: 170px; display: block; }
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85); z-index: 10000; display: none;
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-content {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 16px; padding: 20px; width: 100%; max-width: 360px;
+        }
+
+        /* QR Container */
+        .qr-box {
+            background: #ffffff; padding: 12px; border-radius: 12px;
+            display: inline-block; margin: 12px auto;
+        }
     </style>
 </head>
 <body>
@@ -125,7 +139,7 @@
     <!-- Header -->
     <div class="top-header">
         <div class="app-title"><i class="fa-solid fa-chart-line"></i> نكست تريدي</div>
-        <a href="#" class="btn-download-app" onclick="alert('جارٍ تحضير رابط تحميل التطبيق المباشر...')"><i class="fa-solid fa-download"></i> تنزيل التطبيق</a>
+        <button class="btn-download-app" onclick="installApp()"><i class="fa-solid fa-download"></i> تنزيل التطبيق</button>
     </div>
 
     <!-- Wallet & Investment Stats -->
@@ -179,22 +193,25 @@
     <!-- DEPOSIT PAGE VIEW -->
     <div id="page-deposit" class="page-view">
         <div class="section-card" style="text-align: center;">
-            <div class="section-header"><i class="fa-solid fa-qrcode"></i> إيداع رصيد (BEP20 / BingX)</div>
+            <div class="section-header" style="justify-content: center;"><i class="fa-solid fa-qrcode"></i> إيداع رصيد (BEP20 / BingX)</div>
             <p style="font-size: 12px; color: var(--text-muted);">امسح الـ QR أو انسخ عنوان المحفظة أدناه لتحويل المبلغ:</p>
             
-            <div class="qr-container">
-                <img src="1000436512_8172d5.png" alt="QR Code Deposit">
+            <div class="qr-box">
+                <div id="qrcode"></div>
             </div>
 
             <div class="form-group">
                 <label>رابط المحفظة المقبولة:</label>
-                <input type="text" readonly value="0x7288dcac07613f69b7ab1be56996849bede68e03" style="text-align: center; color: var(--gold); font-weight: bold;">
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="depositAddress" readonly value="0x7288dcac07613f69b7ab1be56996849bede68e03" style="text-align: center; color: var(--gold); font-weight: bold;">
+                    <button type="button" class="btn btn-gold" style="width: auto; padding: 0 15px;" onclick="copyAddress()"><i class="fa-regular fa-copy"></i></button>
+                </div>
             </div>
 
             <form onsubmit="submitDeposit(event)">
                 <div class="form-group">
                     <label>المبلغ المراد شحنه ($):</label>
-                    <input type="number" required id="depAmount" placeholder="أدخل المبلغ...">
+                    <input type="number" required id="depAmount" placeholder="أدخل المبلغ بعد التحويل...">
                 </div>
                 <button type="submit" class="btn btn-gold">إرسال طلب الإيداع</button>
             </form>
@@ -206,7 +223,6 @@
         <div class="section-card">
             <div class="section-header"><i class="fa-solid fa-vault"></i> خطط الاستثمار المتاحة</div>
             <div class="plans-grid">
-                <!-- 13 Investment Plans -->
                 <script>
                     const plans = [10, 30, 50, 100, 150, 300, 500, 750, 1000, 1200, 1500, 1750, 2000];
                     plans.forEach(p => {
@@ -214,12 +230,34 @@
                             <div class="plan-card">
                                 <div style="font-size: 11px; color: var(--text-muted);">خطة استثمار</div>
                                 <div class="plan-price">$${p}</div>
-                                <button class="btn btn-gold" style="padding: 6px; font-size: 12px;" onclick="investPlan(${p})">استثمار الآن</button>
+                                <button class="btn btn-gold" style="padding: 6px; font-size: 12px;" onclick="openInvestModal(${p})">استثمار الآن</button>
                             </div>
                         `);
                     });
                 </script>
             </div>
+        </div>
+    </div>
+
+    <!-- Investment Modal -->
+    <div id="investModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="section-header"><i class="fa-solid fa-vault"></i> تأكيد طلب الاستثمار</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">يرجى كتابة المبلغ وتأكيد العملية للتحويل إلى المراجعة:</p>
+            <form onsubmit="confirmInvestment(event)">
+                <div class="form-group">
+                    <label>المبلغ ($):</label>
+                    <input type="number" id="modalInvestAmount" required readonly style="color: var(--gold); font-weight: bold;">
+                </div>
+                <div class="form-group">
+                    <label>تأكيد المبلغ المكتوب ($):</label>
+                    <input type="number" id="modalInvestConfirm" required placeholder="أدخل المبلغ للـتأكيد...">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button type="submit" class="btn btn-gold">تأكيد الاستثمار</button>
+                    <button type="button" class="btn" style="background: rgba(255,255,255,0.1); color: #fff;" onclick="closeInvestModal()">إلغاء</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -279,12 +317,37 @@
             <form onsubmit="submitKYC(event)">
                 <div class="form-group">
                     <label>الاسم الكامل:</label>
-                    <input type="text" required placeholder="الاسم كما في الهوية...">
+                    <input type="text" required placeholder="الاسم كما في الهوية/الجواز...">
                 </div>
+
                 <div class="form-group">
-                    <label>صورة الهوية / الجواز:</label>
-                    <input type="file" accept="image/*" required>
+                    <label>نوع الوثيقة:</label>
+                    <select id="docTypeSelect" onchange="toggleDocFields()">
+                        <option value="id">بطاقة شخصية / هوية</option>
+                        <option value="passport">جواز سفر</option>
+                    </select>
                 </div>
+
+                <!-- ID Card Fields (2 Files: Front & Back) -->
+                <div id="idCardFields">
+                    <div class="form-group">
+                        <label>صورة الهوية (الوجه الأمامي):</label>
+                        <input type="file" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label>صورة الهوية (الوجه الخلفي):</label>
+                        <input type="file" accept="image/*">
+                    </div>
+                </div>
+
+                <!-- Passport Field (1 File) -->
+                <div id="passportFields" style="display: none;">
+                    <div class="form-group">
+                        <label>صورة جواز السفر:</label>
+                        <input type="file" accept="image/*">
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-gold">رفع وثائق التوثيق</button>
             </form>
         </div>
@@ -300,6 +363,15 @@
     </div>
 
     <script>
+        // Generate QR Code dynamically
+        window.onload = function() {
+            new QRCode(document.getElementById("qrcode"), {
+                text: "0x7288dcac07613f69b7ab1be56996849bede68e03",
+                width: 150,
+                height: 150
+            });
+        };
+
         // Check Auth Status
         if(localStorage.getItem('isLoggedIn') === 'true') {
             document.getElementById('authOverlay').style.display = 'none';
@@ -320,59 +392,4 @@
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('userEmail', email);
             document.getElementById('accEmailDisplay').innerText = email;
-            document.getElementById('authOverlay').style.display = 'none';
-            alert("تم تسجيل الدخول بنجاح");
-        }
-
-        // Navigation Engine
-        function showPage(pageId, element) {
-            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('page-' + pageId).classList.add('active');
-            element.classList.add('active');
-        }
-
-        // Form Handlers
-        function submitDeposit(e) {
-            e.preventDefault();
-            alert("تم العملية بقيد المراجعة");
-            document.getElementById('depAmount').value = '';
-        }
-
-        function investPlan(amount) {
-            alert("تم العملية بقيد المراجعة");
-        }
-
-        function submitWithdraw(e) {
-            e.preventDefault();
-            alert("تم العملية بقيد المراجعة");
-        }
-
-        function submitKYC(e) {
-            e.preventDefault();
-            alert("تم العملية بقيد المراجعة");
-        }
-
-        function claimDailyTask() {
-            const hasDeposit = localStorage.getItem('hasActiveInvestment');
-            if(!hasDeposit) {
-                alert("يجب الإيداع والاستثمار أولاً لتتمكن من استلام المهام اليومية.");
-            } else {
-                alert("تم استلام أرباح المهمة اليومية بنجاح!");
-            }
-        }
-
-        // Admin Approval Functions (To be triggered from Admin later)
-        function setVerifiedStatus(isVerified) {
-            const badge = document.getElementById('kycStatusBadge');
-            if(isVerified) {
-                badge.className = "badge badge-verified";
-                badge.innerText = "تم التحقق";
-            } else {
-                badge.className = "badge badge-pending";
-                badge.innerText = "قيد المراجعة";
-            }
-        }
-    </script>
-</body>
-    </html>
+       
