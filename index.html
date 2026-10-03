@@ -82,7 +82,7 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; gap: 4px; cursor: pointer; }
         .nav-item.active { color: var(--gold); font-weight: 700; }
 
-        /* Custom Notification Popups (Replaces Browser Alert) */
+        /* Custom Notification Toast */
         .custom-toast {
             position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
             background: var(--card-bg); border: 1px solid var(--gold); color: var(--gold);
@@ -105,7 +105,7 @@
 </head>
 <body>
 
-    <!-- Custom Notification Toast -->
+    <!-- Notification Toast -->
     <div id="customToast" class="custom-toast"></div>
 
     <!-- Auth Screen -->
@@ -113,21 +113,19 @@
         <div class="auth-card">
             <i class="fa-solid fa-chart-line" style="font-size: 40px; color: var(--gold); margin-bottom: 10px;"></i>
             <h2>نيكست تريدي</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label>البريد الإلكتروني:</label>
-                    <input type="email" id="userEmailInput" required placeholder="example@gmail.com">
-                </div>
-                <div class="form-group">
-                    <label>كلمة السر:</label>
-                    <input type="password" id="userPass" required placeholder="******">
-                </div>
-                <div class="form-group">
-                    <label>تأكيد كلمة السر:</label>
-                    <input type="password" id="userPassConfirm" required placeholder="******">
-                </div>
-                <button type="submit" class="btn btn-gold" style="margin-top: 10px;">تسجيل الدخول</button>
-            </form>
+            <div class="form-group">
+                <label>البريد الإلكتروني:</label>
+                <input type="email" id="userEmailInput" placeholder="example@gmail.com">
+            </div>
+            <div class="form-group">
+                <label>كلمة السر:</label>
+                <input type="password" id="userPass" placeholder="******">
+            </div>
+            <div class="form-group">
+                <label>تأكيد كلمة السر:</label>
+                <input type="password" id="userPassConfirm" placeholder="******">
+            </div>
+            <button type="button" class="btn btn-gold" style="margin-top: 10px;" onclick="doLogin()">تسجيل الدخول</button>
         </div>
     </div>
 
@@ -197,13 +195,11 @@
                 </div>
             </div>
 
-            <form onsubmit="event.preventDefault(); notify('تم العملية بقيد المراجعة');">
-                <div class="form-group">
-                    <label>المبلغ المراد شحنه ($):</label>
-                    <input type="number" required placeholder="أدخل المبلغ بعد التحويل...">
-                </div>
-                <button type="submit" class="btn btn-gold">إرسال طلب الإيداع</button>
-            </form>
+            <div class="form-group">
+                <label>المبلغ المراد شحنه ($):</label>
+                <input type="number" id="depAmount" placeholder="أدخل المبلغ بعد التحويل...">
+            </div>
+            <button type="button" class="btn btn-gold" onclick="notify('تم العملية بقيد المراجعة')">إرسال طلب الإيداع</button>
         </div>
     </div>
 
@@ -220,20 +216,18 @@
         <div class="modal-content">
             <div class="section-header" style="justify-content: center;"><i class="fa-solid fa-vault"></i> تأكيد طلب الاستثمار</div>
             <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">يرجى تأكيد قيمة الخطة للتحويل إلى المراجعة:</p>
-            <form onsubmit="event.preventDefault(); closeInvestModal(); notify('تم العملية بقيد المراجعة');">
-                <div class="form-group">
-                    <label>المبلغ ($):</label>
-                    <input type="number" id="modalInvestAmount" required readonly style="color: var(--gold); font-weight: bold;">
-                </div>
-                <div class="form-group">
-                    <label>تأكيد المبلغ المكتوب ($):</label>
-                    <input type="number" required placeholder="أدخل المبلغ للـتأكيد...">
-                </div>
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <button type="submit" class="btn btn-gold">تأكيد الاستثمار</button>
-                    <button type="button" class="btn" style="background: rgba(255,255,255,0.1); color: #fff;" onclick="closeInvestModal()">إلغاء</button>
-                </div>
-            </form>
+            <div class="form-group">
+                <label>المبلغ ($):</label>
+                <input type="number" id="modalInvestAmount" readonly style="color: var(--gold); font-weight: bold;">
+            </div>
+            <div class="form-group">
+                <label>تأكيد المبلغ المكتوب ($):</label>
+                <input type="number" placeholder="أدخل المبلغ للـتأكيد...">
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button type="button" class="btn btn-gold" onclick="closeInvestModal(); notify('تم العملية بقيد المراجعة');">تأكيد الاستثمار</button>
+                <button type="button" class="btn" style="background: rgba(255,255,255,0.1); color: #fff;" onclick="closeInvestModal()">إلغاء</button>
+            </div>
         </div>
     </div>
 
@@ -261,26 +255,24 @@
                 <div style="font-size: 18px; font-weight: 800; color: var(--gold); font-family: monospace;">6 أيام 23:59:59</div>
             </div>
 
-            <form onsubmit="event.preventDefault(); notify('تم العملية بقيد المراجعة');">
-                <div class="form-group">
-                    <label>اختر طريقة السحب:</label>
-                    <select required>
-                        <option value="USDT-BEP20">USDT - BEP20</option>
-                        <option value="USDT-TRC20">USDT - TRC20</option>
-                        <option value="BingX">BingX UID</option>
-                        <option value="Payeer">Payeer Wallet</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>عنوان المحفظة / رقم الحساب:</label>
-                    <input type="text" required placeholder="أدخل العنوان هنا...">
-                </div>
-                <div class="form-group">
-                    <label>المبلغ المراد سحبه ($):</label>
-                    <input type="number" required placeholder="50">
-                </div>
-                <button type="submit" class="btn btn-gold">تأكيد طلب السحب</button>
-            </form>
+            <div class="form-group">
+                <label>اختر طريقة السحب:</label>
+                <select>
+                    <option value="USDT-BEP20">USDT - BEP20</option>
+                    <option value="USDT-TRC20">USDT - TRC20</option>
+                    <option value="BingX">BingX UID</option>
+                    <option value="Payeer">Payeer Wallet</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>عنوان المحفظة / رقم الحساب:</label>
+                <input type="text" placeholder="أدخل العنوان هنا...">
+            </div>
+            <div class="form-group">
+                <label>المبلغ المراد سحبه ($):</label>
+                <input type="number" placeholder="50">
+            </div>
+            <button type="button" class="btn btn-gold" onclick="notify('تم العملية بقيد المراجعة')">تأكيد طلب السحب</button>
         </div>
     </div>
 
@@ -302,42 +294,38 @@
             <hr style="border: none; border-top: 1px solid var(--card-border); margin: 15px 0;">
 
             <div class="section-header"><i class="fa-solid fa-id-card"></i> تقديم طلب التوثيق</div>
-            <form onsubmit="event.preventDefault(); notify('تم العملية بقيد المراجعة');">
+            <div class="form-group">
+                <label>الاسم الكامل:</label>
+                <input type="text" placeholder="الاسم كما في الهوية/الجواز...">
+            </div>
+
+            <div class="form-group">
+                <label>نوع الوثيقة:</label>
+                <select id="docTypeSelect" onchange="toggleDocFields()">
+                    <option value="id">بطاقة شخصية / هوية</option>
+                    <option value="passport">جواز سفر</option>
+                </select>
+            </div>
+
+            <div id="idCardFields">
                 <div class="form-group">
-                    <label>الاسم الكامل:</label>
-                    <input type="text" required placeholder="الاسم كما في الهوية/الجواز...">
+                    <label>صورة الهوية (الوجه الأمامي):</label>
+                    <input type="file" accept="image/*">
                 </div>
-
                 <div class="form-group">
-                    <label>نوع الوثيقة:</label>
-                    <select id="docTypeSelect" onchange="toggleDocFields()">
-                        <option value="id">بطاقة شخصية / هوية</option>
-                        <option value="passport">جواز سفر</option>
-                    </select>
+                    <label>صورة الهوية (الوجه الخلفي):</label>
+                    <input type="file" accept="image/*">
                 </div>
+            </div>
 
-                <!-- ID Card Fields (2 Files) -->
-                <div id="idCardFields">
-                    <div class="form-group">
-                        <label>صورة الهوية (الوجه الأمامي):</label>
-                        <input type="file" accept="image/*" required>
-                    </div>
-                    <div class="form-group">
-                        <label>صورة الهوية (الوجه الخلفي):</label>
-                        <input type="file" accept="image/*" required>
-                    </div>
+            <div id="passportFields" style="display: none;">
+                <div class="form-group">
+                    <label>صورة جواز السفر:</label>
+                    <input type="file" accept="image/*">
                 </div>
+            </div>
 
-                <!-- Passport Field (1 File) -->
-                <div id="passportFields" style="display: none;">
-                    <div class="form-group">
-                        <label>صورة جواز السفر:</label>
-                        <input type="file" accept="image/*">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-gold">رفع وثائق التوثيق</button>
-            </form>
+            <button type="button" class="btn btn-gold" onclick="notify('تم العملية بقيد المراجعة')">رفع وثائق التوثيق</button>
         </div>
     </div>
 
@@ -351,40 +339,56 @@
     </div>
 
     <script>
-        // Custom Toast Notification System
+        // Custom Toast Notification
         function notify(msg) {
             const toast = document.getElementById('customToast');
             toast.innerText = msg;
             toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
-        // DOM Elements
-        const loginForm = document.getElementById('loginForm');
-        const authOverlay = document.getElementById('authOverlay');
-        const accEmailDisplay = document.getElementById('accEmailDisplay');
-
-        // Handle Login Submission
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Direct Fast Login Handler
+        function doLogin() {
             const email = document.getElementById('userEmailInput').value;
             const p1 = document.getElementById('userPass').value;
             const p2 = document.getElementById('userPassConfirm').value;
 
-            if(p1 !== p2) {
+            if(!email) {
+                notify("يرجى كتابة البريد الإلكتروني!");
+                return;
+            }
+            if(p1 !== p2 || !p1) {
                 notify("كلمتا السر غير متطابقتين!");
                 return;
             }
 
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('userEmail', email);
-            accEmailDisplay.innerText = email;
-            authOverlay.style.display = 'none';
+            document.getElementById('accEmailDisplay').innerText = email;
+            document.getElementById('authOverlay').style.display = 'none';
+        }
+
+        // Auto Check Login
+        if(localStorage.getItem('isLoggedIn') === 'true') {
+            document.getElementById('authOverlay').style.display = 'none';
+            document.getElementById('accEmailDisplay').innerText = localStorage.getItem('userEmail') || 'user@mail.com';
+        }
+
+        // Render Plans
+        const plansList = [10, 30, 50, 100, 150, 300, 500, 750, 1000, 1200, 1500, 1750, 2000];
+        const plansContainer = document.getElementById('plansContainer');
+        plansList.forEach(p => {
+            plansContainer.innerHTML += `
+                <div class="plan-card">
+                    <div style="font-size: 11px; color: var(--text-muted);">خطة استثمار</div>
+                    <div class="plan-price">$${p}</div>
+                    <button type="button" class="btn btn-gold" style="padding: 6px; font-size: 12px;" onclick="openInvestModal(${p})">استثمار الآن</button>
+                </div>
+            `;
         });
 
-        // Auto Check Login Status
-        if(localStorage.getItem('isLoggedIn') === 'true') {
-            authOverlay.style.display = 'none';
-            accEmailDisplay.innerText = localStorage.getItem('u
+        // QRCode Generator
+        window.onload = function() {
+            try {
+                new QRCode(document.getElementById("qrcode"), {
+                    text: "0x7288dcac07613f69b7ab1be56996849bede68e03"
