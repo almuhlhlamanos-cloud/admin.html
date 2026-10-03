@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - نيكست تريدي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0d14;
+            --card-bg: #131a26;
+            --card-border: #1f2a3d;
+            --gold: #f0b90b;
+            --green: #0ecb81;
+            --red: #f6465d;
+            --text-main: #f1f5f9;
+            --text-muted: #8492a6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; }
+
+        /* Login Modal for Admin */
+        #adminAuth {
+            position: fixed; top:0; left:0; right:0; bottom:0;
+            background: var(--bg-dark); z-index: 9999;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .auth-box {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 16px; padding: 25px; width: 100%; max-width: 360px; text-align: center;
+        }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: var(--card-bg); padding: 15px 20px; border-radius: 12px; border: 1px solid var(--card-border); }
+        .header h1 { font-size: 20px; color: var(--gold); }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 15px; text-align: center; }
+        .stat-title { font-size: 13px; color: var(--text-muted); }
+        .stat-val { font-size: 22px; font-weight: 800; color: var(--gold); margin-top: 5px; }
+
+        .section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; margin-bottom: 25px; }
+        .section-title { font-size: 16px; font-weight: 700; color: var(--gold); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { padding: 12px; text-align: right; border-bottom: 1px solid var(--card-border); }
+        th { color: var(--text-muted); background: rgba(255,255,255,0.02); }
+
+        .btn { padding: 6px 14px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12px; }
+        .btn-approve { background: var(--green); color: #000; }
+        .btn-reject { background: var(--red); color: #fff; }
+        .btn-gold { background: var(--gold); color: #000; }
+
+        .input-style { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); border-radius: 8px; color: #fff; margin-bottom: 10px; outline: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Admin Authentication -->
+    <div id="adminAuth">
+        <div class="auth-box">
+            <i class="fa-solid fa-user-shield" style="font-size: 40px; color: var(--gold); margin-bottom: 15px;"></i>
+            <h2 style="margin-bottom: 15px;">دخول الأدمن</h2>
+            <input type="password" id="adminPass" class="input-style" placeholder="رمز المرور...">
+            <button class="btn btn-gold" style="width: 100%; padding: 10px;" onclick="checkAdminPass()">دخول</button>
+        </div>
+    </div>
+
+    <!-- Main Admin Dashboard -->
+    <div class="header">
+        <h1><i class="fa-solid fa-gauge-high"></i> لوحة إدارة NextTrade</h1>
+        <button class="btn btn-reject" onclick="location.reload()">تسجيل خروج</button>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-title">إجمالي الأعضاء</div>
+            <div class="stat-val" id="totalUsers">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">طلبات الإيداع المعلقة</div>
+            <div class="stat-val" id="pendingDeposits">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">طلبات السحب المعلقة</div>
+            <div class="stat-val" id="pendingWithdraws">0</div>
+        </div>
+    </div>
+
+    <!-- Pending Deposits -->
+    <div class="section">
+        <div class="section-title"><i class="fa-solid fa-qrcode"></i> طلبات الإيداع</div>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>المستخدم</th>
+                        <th>المبلغ</th>
+                        <th>التاريخ</th>
+                        <th>الحالة</th>
+                        <th>الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="depositTable">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pending Withdrawals -->
+    <div class="section">
+        <div class="section-title"><i class="fa-solid fa-money-bill-transfer"></i> طلبات السحب</div>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>المستخدم</th>
+                        <th>طريقة السحب</th>
+                        <th>العنوان</th>
+                        <th>المبلغ</th>
+                        <th>الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="withdrawTable">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- User Control -->
+    <div class="section">
+        <div class="section-title"><i class="fa-solid fa-users-gear"></i> إدارة أرصدة الأعضاء</div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="email" id="targetEmail" class="input-style" placeholder="بريد المستخدم..." style="flex: 1; min-width: 200px;">
+            <input type="number" id="targetBalance" class="input-style" placeholder="الرصيد الجديد ($)..." style="flex: 1; min-width: 150px;">
+            <button class="btn btn-gold" style="height: 42px;" onclick="updateUserBalance()">تحديث الرصيد</button>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_PASS = "admin12345"; // قم بتغيير رمز المرور هنا
+
+        function checkAdminPass() {
+            const pass = document.getElementById('adminPass').value;
+            if(pass === ADMIN_PASS) {
+                document.getElementById('adminAuth').style.display = 'none';
+                loadAdminData();
+            } else {
+                alert("رمز المرور غير صحيح!");
+            }
+        }
+
+        function loadAdminData() {
+            // جلب الأرقام والطلبات من LocalStorage مؤقتاً أو من قاعدة البيانات
+            const requests = JSON.parse(localStorage.getItem('nt_requests') || '[]');
+            
+            const depTable = document.getElementById('depositTable');
+            const wdTable = document.getElementById('withdrawTable');
+            
+            depTable.innerHTML = '';
+            wdTable.innerHTML = '';
+
+            let depCount = 0;
+            let wdCount = 0;
+
+            requests.forEach((req, idx) => {
+                if(req.type === 'deposit') {
+                    depCount++;
+                    depTable.innerHTML += `
+                        <tr>
+                            <td>${req.user}</td>
+                            <td style="color:var(--gold); font-weight:bold;">$${req.amount}</td>
+                            <td>${req.date}</td>
+                            <td><span style="color:var(--gold)">معلق</span></td>
+                            <td>
+                                <button class="btn btn-approve" onclick="actionReq(${idx}, 'approve')">قبول</button>
+                                <button class="btn btn-reject" onclick="actionReq(${idx}, 'reject')">رفض</button>
+                            </td>
+                        </tr>
+                    `;
+                } else if(req.type === 'withdraw') {
+                    wdCount++;
+                    wdTable.innerHTML += `
+                        <tr>
+                            <td>${req.user}</td>
+                            <td>${req.method}</td>
+                            <td style="font-family:monospace">${req.address}</td>
+                            <td style="color:var(--gold); font-weight:bold;">$${req.amount}</td>
+                            <td>
+                                <button class="btn btn-approve" onclick="actionReq(${idx}, 'approve')">تم التحويل</button>
+                                <button class="btn btn-reject" onclick="actionReq(${idx}, 'reject')">رفض</button>
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+
+            document.getElementById('pendingDeposits').innerText = depCount;
+            document.getElementById('pendingWithdraws').innerText = wdCount;
+            document.getElementById('totalUsers').innerText = localStorage.getItem('nt_users_count') || '1';
+        }
+
+        function actionReq(index, status) {
+            let requests = JSON.parse(localStorage.getItem('nt_requests') || '[]');
+            alert(status === 'approve' ? "تم قبول الطلب بنجاح!" : "تم رفض الطلب.");
+            requests.splice(index, 1);
+            localStorage.setItem('nt_requests', JSON.stringify(requests));
+            loadAdminData();
+        }
+
+        function updateUserBalance() {
+            const email = document.getElementById('targetEmail').value;
+            const balance = document.getElementById('targetBalance').value;
+            if(!email || !balance) return alert("يرجى كتابة البريد والرصيد!");
+            
+            localStorage.setItem('bal_' + email, balance);
+            alert(`تم تحديث رصيد ${email} إلى $${balance}`);
+        }
+    </script>
+</body>
+  </html>
