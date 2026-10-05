@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة إدارية متقدمة - NextTrade Admin</title>
+    <title>لوحة إدارية مباشرة أونلاين - NextTrade Admin</title>
+    <!-- Firebase Realtime Database SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
     <style>
         :root {
             --bg-color: #0b1120;
@@ -30,11 +34,12 @@
 
         .input-box { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border-radius: 6px; border: 1px solid var(--border-color); background: #0f172a; color: white; }
         .hidden { display: none; }
+        .badge { background-color: var(--accent-color); color: black; padding: 2px 6px; border-radius: 10px; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<h2 style="margin-bottom: 20px;">لوحة تحكم إدارية حقيقية - NextTrade</h2>
+<h2 style="margin-bottom: 20px;">لوحة تحكم إدارية أونلاين - NextTrade <span class="badge">مباشر متصل</span></h2>
 
 <!-- تسجيل دخول الأدمن -->
 <div id="adminLogin" class="admin-card" style="max-width: 400px; margin: 50px auto;">
@@ -85,114 +90,121 @@
 </div>
 
 <script>
+    // إعدادات خادم Firebase للربط المباشر
+    const firebaseConfig = {
+        databaseURL: "https://nexttrade-live-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     function checkAdmin() {
         const pass = document.getElementById('adminPass').value;
         if (pass === 'admin123') {
             document.getElementById('adminLogin').classList.add('hidden');
             document.getElementById('adminContent').classList.remove('hidden');
-            loadTables();
+            listenToLiveUpdates();
         } else {
             alert('كلمة المرور غير صحيحة!');
         }
     }
 
-    function loadTables() {
-        // الإيداعات
-        const deposits = JSON.parse(localStorage.getItem('pending_deposits') || '[]');
-        const depTable = document.getElementById('depositsTable');
-        depTable.innerHTML = '';
+    function listenToLiveUpdates() {
+        // الاستماع الفوري لطلبات الإيداع عبر الإنترنت
+        db.ref('deposits').on('value', (snapshot) => {
+            const depTable = document.getElementById('depositsTable');
+            depTable.innerHTML = '';
 
-        deposits.filter(d => d.status === 'معلق').forEach(d => {
-            depTable.innerHTML += `
-                <tr>
-                    <td>${d.user}</td>
-                    <td><b>$${d.amount}</b></td>
-                    <td style="font-family:monospace; font-size:11px;">${d.txHash}</td>
-                    <td>${d.date}</td>
-                    <td>
-                        <button class="btn-approve" onclick="approveDeposit(${d.id})">قبول وإضافة للحساب</button>
-                        <button class="btn-reject" onclick="rejectDeposit(${d.id})">رفض</button>
-                    </td>
-                </tr>
-            `;
-        });
-
-        // السحوبات
-        const withdrawals = JSON.parse(localStorage.getItem('pending_withdrawals') || '[]');
-        const withTable = document.getElementById('withdrawalsTable');
-        withTable.innerHTML = '';
-
-        withdrawals.filter(w => w.status === 'معلق').forEach(w => {
-            withTable.innerHTML += `
-                <tr>
-                    <td>${w.user}</td>
-                    <td>$${w.amount}</td>
-                    <td><b>$${w.net}</b></td>
-                    <td style="font-family:monospace; font-size:11px;">${w.address}</td>
-                    <td>${w.date}</td>
-                    <td>
-                        <button class="btn-approve" onclick="approveWithdraw(${w.id})">تم التحويل</button>
-                        <button class="btn-reject" onclick="rejectWithdraw(${w.id})">إلغاء الطلب</button>
-                    </td>
-                </tr>
-            `;
-        });
-    }
-
-    function approveDeposit(id) {
-        let deposits = JSON.parse(localStorage.getItem('pending_deposits') || '[]');
-        let users = JSON.parse(localStorage.getItem('app_users') || '{}');
-
-        let dep = deposits.find(d => d.id === id);
-        if (dep) {
-            dep.status = 'مقبول';
-            if (users[dep.user]) {
-                users[dep.user].invested += dep.amount;
+            if (snapshot.exists()) {
+                const deposits = snapshot.val();
+                Object.keys(deposits).forEach(key => {
+                    const d = deposits[key];
+                    if (d.status === 'معلق') {
+                        depTable.innerHTML += `
+                            <tr>
+                                <td>${d.userEmail}</td>
+                                <td><b>$${d.amount}</b></td>
+                                <td style="font-family:monospace; font-size:11px;">${d.txHash}</td>
+                                <td>${d.date}</td>
+                                <td>
+                                    <button class="btn-approve" onclick="approveDeposit('${key}', '${d.userKey}', ${d.amount})">قبول وإضافة للحساب فوراً</button>
+                                    <button class="btn-reject" onclick="rejectDeposit('${key}')">رفض</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
             }
-            localStorage.setItem('pending_deposits', JSON.stringify(deposits));
-            localStorage.setItem('app_users', JSON.stringify(users));
-            alert('تمت الموافقة بنجاح! تم شحن حساب المستخدم برصيد الاستثمار الحقيقي.');
-            loadTables();
-        }
+            if(depTable.innerHTML === '') {
+                depTable.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8;">لا توجد طلبات إيداع معلقة حالياً</td></tr>';
+            }
+        });
+
+        // الاستماع الفوري لطلبات السحب عبر الإنترنت
+        db.ref('withdrawals').on('value', (snapshot) => {
+            const withTable = document.getElementById('withdrawalsTable');
+            withTable.innerHTML = '';
+
+            if (snapshot.exists()) {
+                const withdrawals = snapshot.val();
+                Object.keys(withdrawals).forEach(key => {
+                    const w = withdrawals[key];
+                    if (w.status === 'معلق') {
+                        withTable.innerHTML += `
+                            <tr>
+                                <td>${w.userEmail}</td>
+                                <td>$${w.amount}</td>
+                                <td><b>$${w.net}</b></td>
+                                <td style="font-family:monospace; font-size:11px;">${w.address}</td>
+                                <td>${w.date}</td>
+                                <td>
+                                    <button class="btn-approve" onclick="approveWithdraw('${key}')">تم التحويل للمحفظة</button>
+                                    <button class="btn-reject" onclick="rejectWithdraw('${key}', '${w.userKey}', ${w.amount})">إلغاء وإعادة المبلغ</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+            }
+            if(withTable.innerHTML === '') {
+                withTable.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94a3b8;">لا توجد طلبات سحب معلقة حالياً</td></tr>';
+            }
+        });
     }
 
-    function rejectDeposit(id) {
-        let deposits = JSON.parse(localStorage.getItem('pending_deposits') || '[]');
-        let dep = deposits.find(d => d.id === id);
-        if (dep) {
-            dep.status = 'مرفوض';
-            localStorage.setItem('pending_deposits', JSON.stringify(deposits));
+    function approveDeposit(depId, userKey, amount) {
+        // تحديث حالة الطلب
+        db.ref('deposits/' + depId).update({ status: 'مقبول' }).then(() => {
+            // زيادة رصيد الاستثمار للمستخدم في قواعد البيانات مباشرة
+            db.ref('users/' + userKey + '/invested').transaction((currentInvested) => {
+                return (parseFloat(currentInvested) || 0) + parseFloat(amount);
+            }).then(() => {
+                alert('تم القبول بنجاح! نزل رصيد الاستثمار في حساب المستخدم فوراً أونلاين.');
+            });
+        });
+    }
+
+    function rejectDeposit(depId) {
+        db.ref('deposits/' + depId).update({ status: 'مرفوض' }).then(() => {
             alert('تم رفض طلب الإيداع.');
-            loadTables();
-        }
+        });
     }
 
-    function approveWithdraw(id) {
-        let withdrawals = JSON.parse(localStorage.getItem('pending_withdrawals') || '[]');
-        let wit = withdrawals.find(w => w.id === id);
-        if (wit) {
-            wit.status = 'مكتمل';
-            localStorage.setItem('pending_withdrawals', JSON.stringify(withdrawals));
-            alert('تم تأكيد تحويل السحب.');
-            loadTables();
-        }
+    function approveWithdraw(withdrawId) {
+        db.ref('withdrawals/' + withdrawId).update({ status: 'مكتمل' }).then(() => {
+            alert('تم تأكيد السحب بنجاح.');
+        });
     }
 
-    function rejectWithdraw(id) {
-        let withdrawals = JSON.parse(localStorage.getItem('pending_withdrawals') || '[]');
-        let users = JSON.parse(localStorage.getItem('app_users') || '{}');
-        let wit = withdrawals.find(w => w.id === id);
-        if (wit) {
-            wit.status = 'مرفوض';
-            if (users[wit.user]) {
-                users[wit.user].withdrawable += wit.amount;
-            }
-            localStorage.setItem('pending_withdrawals', JSON.stringify(withdrawals));
-            localStorage.setItem('app_users', JSON.stringify(users));
-            alert('تم رفض السحب وإعادة الرصيد لحساب المستثمر.');
-            loadTables();
-        }
+    function rejectWithdraw(withdrawId, userKey, amount) {
+        db.ref('withdrawals/' + withdrawId).update({ status: 'مرفوض' }).then(() => {
+            // إعادة الرصيد للمستخدم
+            db.ref('users/' + userKey + '/withdrawable').transaction((currentWithdrawable) => {
+                return (parseFloat(currentWithdrawable) || 0) + parseFloat(amount);
+            }).then(() => {
+                alert('تم إلغاء طلب السحب وإعادة المبلغ إلى حساب المستخدم.');
+            });
+        });
     }
 </script>
 </body>
-</html>
+        </html>
