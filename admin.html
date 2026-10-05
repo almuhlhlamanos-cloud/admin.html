@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة إدارية متقدمة - NextTrade Admin</title>
+    <style>
+        :root {
+            --bg-color: #0b1120;
+            --card-bg: #1e293b;
+            --accent-color: #00c853;
+            --danger-color: #ef4444;
+            --text-color: #f8fafc;
+            --border-color: #334155;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding: 20px; }
+
+        .admin-card {
+            background-color: var(--card-bg); padding: 20px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { border: 1px solid var(--border-color); padding: 10px; text-align: right; }
+        th { background-color: #0f172a; color: #94a3b8; }
+
+        .btn-approve { background-color: var(--accent-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-reject { background-color: var(--danger-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 5px; }
+
+        .input-box { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border-radius: 6px; border: 1px solid var(--border-color); background: #0f172a; color: white; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<h2 style="margin-bottom: 20px;">لوحة تحكم إدارية حقيقية - NextTrade</h2>
+
+<!-- تسجيل دخول الأدمن -->
+<div id="adminLogin" class="admin-card" style="max-width: 400px; margin: 50px auto;">
+    <h3>دخول الإدارة</h3>
+    <p style="font-size: 12px; color: #94a3b8; margin-bottom: 15px;">رمز الدخول المباشر: admin123</p>
+    <input type="password" id="adminPass" class="input-box" placeholder="كلمة المرور">
+    <button class="btn-approve" style="width: 100%; padding: 10px;" onclick="checkAdmin()">دخول</button>
+</div>
+
+<!-- المحتوى الرئيسي للوحة الأدمن -->
+<div id="adminContent" class="hidden">
+
+    <!-- الإيداعات المعلقة -->
+    <div class="admin-card">
+        <h3 style="color: var(--accent-color);">طلبات الإيداع والشحن المعلقة (USDT)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>المستخدم</th>
+                    <th>المبلغ ($)</th>
+                    <th>رقم المعاملة (TxHash)</th>
+                    <th>التاريخ</th>
+                    <th>الإجراء (قبول حقيقي/رفض)</th>
+                </tr>
+            </thead>
+            <tbody id="depositsTable"></tbody>
+        </table>
+    </div>
+
+    <!-- السحوبات المعلقة -->
+    <div class="admin-card">
+        <h3 style="color: #38bdf8;">طلبات السحب المعلقة</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>المستخدم</th>
+                    <th>المبلغ الإجمالي</th>
+                    <th>الصافي للتحويل</th>
+                    <th>عنوان المحفظة</th>
+                    <th>التاريخ</th>
+                    <th>الإجراء</th>
+                </tr>
+            </thead>
+            <tbody id="withdrawalsTable"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    function checkAdmin() {
+        const pass = document.getElementById('adminPass').value;
+        if (pass === 'admin123') {
+            document.getElementById('adminLogin').classList.add('hidden');
+            document.getElementById('adminContent').classList.remove('hidden');
+            loadTables();
+        } else {
+            alert('كلمة المرور غير صحيحة!');
+        }
+    }
+
+    function loadTables() {
+        // الإيداعات
+        const deposits = JSON.parse(localStorage.getItem('pending_deposits') || '[]');
+        const depTable = document.getElementById('depositsTable');
+        depTable.innerHTML = '';
+
+        deposits.filter(d => d.status === 'معلق').forEach(d => {
+            depTable.innerHTML += `
+                <tr>
+                    <td>${d.user}</td>
+                    <td><b>$${d.amount}</b></td>
+                    <td style="font-family:monospace; font-size:11px;">${d.txHash}</td>
+                    <td>${d.date}</td>
+                    <td>
+                        <button class="btn-approve" onclick="approveDeposit(${d.id})">قبول وإضافة للحساب</button>
+                        <button class="btn-reject" onclick="rejectDeposit(${d.id})">رفض</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        // السحوبات
+        const withdrawals = JSON.parse(localStorage.getItem('pending_withdrawals') || '[]');
+        const withTable = document.getElementById('withdrawalsTable');
+        withTable.innerHTML = '';
+
+        withdrawals.filter(w => w.status === 'معلق').forEach(w => {
+            withTable.innerHTML += `
+                <tr>
+                    <td>${w.user}</td>
+                    <td>$${w.amount}</td>
+                    <td><b>$${w.net}</b></td>
+                    <td style="font-family:monospace; font-size:11px;">${w.address}</td>
+                    <td>${w.date}</td>
+                    <td>
+                        <button class="btn-approve" onclick="approveWithdraw(${w.id})">تم التحويل</button>
+                        <button class="btn-reject" onclick="rejectWithdraw(${w.id})">إلغاء الطلب</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function approveDeposit(id) {
+        let deposits = JSON.parse(localStorage.getItem('pending_deposits') || '[]');
+        let users = JSON.parse(localStorage.getItem('app_users') || '{}');
+
+        let dep = deposits.find(d => d.id === id);
+        if (dep) {
+            dep.status = 'مقبول';
+            if (users[dep.user]) {
+                users[dep.user].invested += dep.amount;
+            }
+            localStorage.setItem('pending_deposits', JSON.stringify(deposits));
+            localStorage.setItem('app_users', JSON.stringify(users));
+            alert('تمت الموافقة بنجاح! تم شحن حساب المستخدم برصيد الاستثمار الحقيقي.');
+            loadTables();
+        }
+    }
+
+    function rejectDeposit(id) {
+        let deposits = JSON.parse(localStorage.getItem('pending_deposits') || '[]');
+        let dep = deposits.find(d => d.id === id);
+        if (dep) {
+            dep.status = 'مرفوض';
+            localStorage.setItem('pending_deposits', JSON.stringify(deposits));
+            alert('تم رفض طلب الإيداع.');
+            loadTables();
+        }
+    }
+
+    function approveWithdraw(id) {
+        let withdrawals = JSON.parse(localStorage.getItem('pending_withdrawals') || '[]');
+        let wit = withdrawals.find(w => w.id === id);
+        if (wit) {
+            wit.status = 'مكتمل';
+            localStorage.setItem('pending_withdrawals', JSON.stringify(withdrawals));
+            alert('تم تأكيد تحويل السحب.');
+            loadTables();
+        }
+    }
+
+    function rejectWithdraw(id) {
+        let withdrawals = JSON.parse(localStorage.getItem('pending_withdrawals') || '[]');
+        let users = JSON.parse(localStorage.getItem('app_users') || '{}');
+        let wit = withdrawals.find(w => w.id === id);
+        if (wit) {
+            wit.status = 'مرفوض';
+            if (users[wit.user]) {
+                users[wit.user].withdrawable += wit.amount;
+            }
+            localStorage.setItem('pending_withdrawals', JSON.stringify(withdrawals));
+            localStorage.setItem('app_users', JSON.stringify(users));
+            alert('تم رفض السحب وإعادة الرصيد لحساب المستثمر.');
+            loadTables();
+        }
+    }
+</script>
+</body>
+</html>
