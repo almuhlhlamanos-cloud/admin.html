@@ -3,431 +3,660 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NextTrade | نيكست تريدي</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>منصة التداول والاستثمار</title>
     <style>
         :root {
-            --bg-dark: #0a0d14;
-            --card-bg: #131a26;
-            --card-border: #1f2a3d;
-            --gold: #f0b90b;
-            --text-main: #f1f5f9;
-            --text-muted: #8492a6;
-            --green: #0ecb81;
-            --yellow: #ffb703;
+            --bg-color: #0b0e14;
+            --card-bg: #151d28;
+            --accent-color: #00c853;
+            --accent-hover: #00e676;
+            --text-color: #ffffff;
+            --text-muted: #8a9ba8;
+            --danger-color: #ff5252;
+            --border-color: #232e3e;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 85px; }
-
-        /* Auth Screen Overlay */
-        #authOverlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg-dark); z-index: 999999;
-            display: flex; align-items: center; justify-content: center; padding: 20px;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 15px;
+        }
+
+        /* Banner Download App */
+        .app-download-bar {
+            background: linear-gradient(90deg, #1e293b, #0f172a);
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .app-download-bar button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Auth Screen */
         .auth-card {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 18px; padding: 24px; width: 100%; max-width: 380px; text-align: center;
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: center;
         }
-        .auth-card h2 { color: var(--gold); margin-bottom: 15px; font-size: 24px; font-weight: 800; }
 
-        /* Top Header */
-        .top-header {
-            background: var(--card-bg); padding: 12px 16px; border-bottom: 1px solid var(--card-border);
-            display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000;
+        .auth-card h2 {
+            margin-bottom: 20px;
         }
-        .app-title { font-size: 20px; font-weight: 800; color: var(--gold); display: flex; align-items: center; gap: 8px; }
-        .btn-download-app { background: rgba(240, 185, 11, 0.1); border: 1px solid var(--gold); color: var(--gold); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
 
-        /* Stats Bar */
-        .header-stats {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; margin: 10px 16px;
-            background: linear-gradient(135deg, #131a26 0%, #0d121b 100%); border-radius: 16px; border: 1px solid var(--card-border);
+        .input-group {
+            margin-bottom: 15px;
+            text-align: right;
         }
-        .stat-box { text-align: center; }
-        .stat-title { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
-        .stat-value { font-size: 18px; font-weight: 800; color: var(--gold); }
 
-        /* Page Views */
-        .page-view { display: none; padding: 0 16px; }
-        .page-view.active { display: block; }
-
-        /* Forms & Buttons */
-        .form-group { margin-bottom: 12px; text-align: right; }
-        .form-group label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px; }
-        .form-group input, .form-group select {
-            width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border);
-            border-radius: 10px; color: #fff; font-size: 13px; outline: none;
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+            font-size: 14px;
         }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; }
-        .btn-gold { background: var(--gold); color: #000; }
 
-        /* Section Cards */
-        .section-card { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--card-border); padding: 16px; margin-bottom: 16px; }
-        .section-header { font-size: 15px; font-weight: 700; color: var(--gold); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: #0b0e14;
+            color: white;
+            font-size: 15px;
+        }
 
-        /* Grid */
-        .plans-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
-        .plan-card { background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; text-align: center; }
-        .plan-price { font-size: 20px; font-weight: 800; color: var(--gold); margin: 6px 0; }
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
 
-        /* Navigation */
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Header / Profile */
+        .user-header {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        /* Wallet Cards */
+        .wallet-overview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .card h4 {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .card .amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        /* Task & Timer Section */
+        .task-box {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .timer {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--danger-color);
+            margin: 10px 0;
+            letter-spacing: 2px;
+        }
+
+        /* Deposit Options Grid */
+        .deposit-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .deposit-option {
+            background-color: #0b0e14;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .deposit-option.selected {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background-color: rgba(0, 200, 83, 0.1);
+        }
+
+        /* QR & Wallet Details */
+        .qr-container {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .qr-container img {
+            width: 180px;
+            height: 180px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+        }
+
+        .wallet-address-box {
+            background-color: #0b0e14;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            word-break: break-all;
+            margin: 10px 0;
+            border: 1px dashed var(--border-color);
+        }
+
+        /* Market Section */
+        .market-section {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .market-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .market-item:last-child {
+            border-bottom: none;
+        }
+
+        .market-price.up { color: var(--accent-color); }
+        .market-price.down { color: var(--danger-color); }
+
+        /* Bottom Nav */
         .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg);
-            border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid var(--border-color);
+            max-width: 480px;
+            margin: 0 auto;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; gap: 4px; cursor: pointer; }
-        .nav-item.active { color: var(--gold); font-weight: 700; }
 
-        /* Custom Notification Toast */
-        .custom-toast {
-            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
-            background: var(--card-bg); border: 1px solid var(--gold); color: var(--gold);
-            padding: 14px 24px; border-radius: 30px; font-weight: 700; font-size: 13px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 9999999;
-            transition: all 0.4s ease; text-align: center; width: 90%; max-width: 350px;
+        .nav-item {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
         }
-        .custom-toast.show { top: 20px; }
 
-        /* Custom In-App Modal */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.85); z-index: 10000; display: none;
-            align-items: center; justify-content: center; padding: 20px;
+        .nav-item.active {
+            color: var(--accent-color);
+            font-weight: bold;
         }
-        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; width: 100%; max-width: 360px; text-align: center; }
-        .qr-box { background: #ffffff; padding: 10px; border-radius: 12px; display: inline-block; margin: 12px auto; }
-        .badge-pending { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; background: rgba(255, 183, 3, 0.15); color: var(--yellow); border: 1px solid var(--yellow); }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Notification Toast -->
-    <div id="customToast" class="custom-toast"></div>
+<div class="container">
 
-    <!-- Auth Screen -->
-    <div id="authOverlay">
-        <div class="auth-card">
-            <i class="fa-solid fa-chart-line" style="font-size: 40px; color: var(--gold); margin-bottom: 10px;"></i>
-            <h2>نيكست تريدي</h2>
-            <div class="form-group">
-                <label>البريد الإلكتروني:</label>
-                <input type="email" id="userEmailInput" placeholder="example@gmail.com">
-            </div>
-            <div class="form-group">
-                <label>كلمة السر:</label>
-                <input type="password" id="userPass" placeholder="******">
-            </div>
-            <div class="form-group">
-                <label>تأكيد كلمة السر:</label>
-                <input type="password" id="userPassConfirm" placeholder="******">
-            </div>
-            <button id="loginBtn" type="button" class="btn btn-gold" style="margin-top: 10px;">تسجيل الدخول / إنشاء حساب</button>
-        </div>
+    <!-- شريط تنزيل التطبيق -->
+    <div class="app-download-bar">
+        <span>تطبيق المنصة الذكي</span>
+        <button onclick="downloadApp()">تنزيل التطبيق</button>
     </div>
 
-    <!-- Header -->
-    <div class="top-header">
-        <div class="app-title"><i class="fa-solid fa-chart-line"></i> نكست تريدي</div>
-        <button class="btn-download-app" onclick="showAppInstallModal()"><i class="fa-solid fa-download"></i> تنزيل التطبيق</button>
+    <!-- شاشة تسجيل الدخول -->
+    <div id="authScreen" class="auth-card">
+        <h2>تسجيل الدخول</h2>
+        <div class="input-group">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="emailInput" placeholder="example@email.com" required>
+        </div>
+        <div class="input-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="passwordInput" placeholder="******" required>
+        </div>
+        <button class="btn-primary" onclick="login()">دخول</button>
     </div>
 
-    <!-- Header Stats -->
-    <div class="header-stats">
-        <div class="stat-box">
-            <div class="stat-title">المحفظة</div>
-            <div class="stat-value" id="walletBalance">$0.00</div>
+    <!-- الشاشة الرئيسية / المحفظة والاستثمار -->
+    <div id="mainScreen" class="hidden">
+        
+        <!-- معلومات الحساب -->
+        <div class="user-header">
+            <div>
+                <small style="color: var(--text-muted);">الحساب المسجل:</small>
+                <div id="userEmailDisplay" style="font-weight: bold;">-</div>
+            </div>
+            <button onclick="logout()" style="background:none; border:none; color:var(--danger-color); cursor:pointer;">خروج</button>
         </div>
-        <div class="stat-box">
-            <div class="stat-title">الاستثمار</div>
-            <div class="stat-value" id="investmentBalance">$0.00</div>
-        </div>
-    </div>
 
-    <!-- HOME VIEW -->
-    <div id="page-home" class="page-view active">
-        <div class="section-card">
-            <div class="section-header"><i class="fa-solid fa-chart-candlestick"></i> سوق تداول الأسهم والعملات المباشر</div>
-            <div style="height: 300px; width: 100%;">
-                <div class="tradingview-widget-container" style="height:100%;width:100%">
-                    <div id="tradingview_chart" style="height:100%;width:100%"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                    <script type="text/javascript">
-                        new TradingView.widget({
-                            "autosize": true,
-                            "symbol": "BINANCE:BTCUSDT",
-                            "interval": "D",
-                            "theme": "dark",
-                            "style": "1",
-                            "locale": "ar",
-                            "container_id": "tradingview_chart"
-                        });
-                    </script>
+        <!-- أرصدة المحفظة -->
+        <div class="wallet-overview">
+            <div class="card">
+                <h4>قسم الاستثمار (المجمد)</h4>
+                <div class="amount">$<span id="investedAmount">0.00</span></div>
+            </div>
+            <div class="card">
+                <h4>الأرباح المتاحة للسحب</h4>
+                <div class="amount">$<span id="withdrawableAmount">0.00</span></div>
+            </div>
+        </div>
+
+        <!-- القسم التفاعلي (محتوى التبويبات) -->
+        
+        <!-- تبويب الرئيسية والمهام -->
+        <div id="tabHome">
+            <div class="task-box">
+                <h3>المهام اليومية (الربح 10%)</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">
+                    قم بتنفيذ المباشرة اليومية لاستلام الأرباح
+                </p>
+                <div class="timer" id="countdownTimer">24:00:00</div>
+                <button class="btn-primary" id="taskBtn" onclick="claimDailyTask()">استلام الربح اليومي</button>
+            </div>
+
+            <!-- سوق التداول الحي -->
+            <div class="market-section">
+                <h3 style="margin-bottom: 10px;">سوق التداول الحي</h3>
+                <div class="market-item">
+                    <span>BTC/USDT</span>
+                    <span class="market-price up" id="btcPrice">$64,250.00</span>
+                </div>
+                <div class="market-item">
+                    <span>ETH/USDT</span>
+                    <span class="market-price down" id="ethPrice">$2,640.50</span>
+                </div>
+                <div class="market-item">
+                    <span>SOL/USDT</span>
+                    <span class="market-price up" id="solPrice">$152.10</span>
+                </div>
+                <div class="market-item">
+                    <span>BNB/USDT</span>
+                    <span class="market-price up" id="bnbPrice">$578.30</span>
                 </div>
             </div>
         </div>
 
-        <div class="section-card">
-            <div class="section-header"><i class="fa-solid fa-list-check"></i> المهام اليومية</div>
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">قم بالاستثمار أولاً لتفعيل زر استلام الأرباح اليومية.</p>
-            <button class="btn btn-gold" onclick="notify('يجب الإيداع والاستثمار أولاً لتتمكن من استلام المهام اليومية.')"><i class="fa-solid fa-hand-holding-dollar"></i> استلام المهمة اليومية</button>
-        </div>
-    </div>
-
-    <!-- DEPOSIT VIEW -->
-    <div id="page-deposit" class="page-view">
-        <div class="section-card" style="text-align: center;">
-            <div class="section-header" style="justify-content: center;"><i class="fa-solid fa-qrcode"></i> إيداع رصيد (BEP20 / BingX)</div>
-            <p style="font-size: 12px; color: var(--text-muted);">امسح الـ QR أو انسخ عنوان المحفظة أدناه لتحويل المبلغ:</p>
-            
-            <div class="qr-box">
-                <div id="qrcode"></div>
-            </div>
-
-            <div class="form-group">
-                <label>رابط المحفظة المقبولة:</label>
-                <div style="display: flex; gap: 5px;">
-                    <input type="text" id="depositAddress" readonly value="0x7288dcac07613f69b7ab1be56996849bede68e03" style="text-align: center; color: var(--gold); font-weight: bold;">
-                    <button type="button" class="btn btn-gold" style="width: auto; padding: 0 15px;" onclick="copyAddress()"><i class="fa-regular fa-copy"></i></button>
+        <!-- تبويب الإيداع -->
+        <div id="tabDeposit" class="hidden">
+            <div class="card">
+                <h3>إيداع الأموال</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 5px 0 15px 0;">اختر المبلغ المطلوب للإيداع عبر USDT (TRC20/BEP20)</p>
+                
+                <div class="deposit-grid" id="depositOptions">
+                    <!-- خيارات الإيداع المحدد -->
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label>المبلغ المراد شحنه ($):</label>
-                <input type="number" id="depAmount" placeholder="أدخل المبلغ بعد التحويل...">
-            </div>
-            <button type="button" class="btn btn-gold" onclick="notify('تم العملية بقيد المراجعة')">إرسال طلب الإيداع</button>
-        </div>
-    </div>
-
-    <!-- INVESTMENTS VIEW -->
-    <div id="page-investments" class="page-view">
-        <div class="section-card">
-            <div class="section-header"><i class="fa-solid fa-vault"></i> خطط الاستثمار المتاحة</div>
-            <div class="plans-grid" id="plansContainer"></div>
-        </div>
-    </div>
-
-    <!-- Investment Modal -->
-    <div id="investModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="section-header" style="justify-content: center;"><i class="fa-solid fa-vault"></i> تأكيد طلب الاستثمار</div>
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">يرجى تأكيد قيمة الخطة للتحويل إلى المراجعة:</p>
-            <div class="form-group">
-                <label>المبلغ ($):</label>
-                <input type="number" id="modalInvestAmount" readonly style="color: var(--gold); font-weight: bold;">
-            </div>
-            <div class="form-group">
-                <label>تأكيد المبلغ المكتوب ($):</label>
-                <input type="number" placeholder="أدخل المبلغ للـتأكيد...">
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button type="button" class="btn btn-gold" onclick="closeInvestModal(); notify('تم العملية بقيد المراجعة');">تأكيد الاستثمار</button>
-                <button type="button" class="btn" style="background: rgba(255,255,255,0.1); color: #fff;" onclick="closeInvestModal()">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- App Install Info Modal -->
-    <div id="appInstallModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="section-header" style="justify-content: center;"><i class="fa-solid fa-download"></i> تنزيل التطبيق</div>
-            <p style="font-size: 13px; color: var(--text-main); margin: 15px 0; line-height: 1.6;">
-                لتنزيل المنصة كبرنامج على هاتفك:<br>
-                1. اضغط خيارات المتصفح (⋮) أو زر المشاركة.<br>
-                2. اختر <b>"إضافة إلى الشاشة الرئيسية"</b> (Add to Home Screen).
-            </p>
-            <button type="button" class="btn btn-gold" onclick="closeAppInstallModal()">حسناً، فهمت</button>
-        </div>
-    </div>
-
-    <!-- WITHDRAW VIEW -->
-    <div id="page-withdraw" class="page-view">
-        <div class="section-card">
-            <div class="section-header"><i class="fa-solid fa-money-bill-transfer"></i> سحب الأرباح</div>
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">ملاحظة: عمليات السحب متاحة مرة واحدة كل 7 أيام.</p>
-            
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; text-align: center; margin-bottom: 15px;">
-                <div style="font-size: 11px; color: var(--text-muted);">المتبقي على موعد السحب القادم:</div>
-                <div style="font-size: 18px; font-weight: 800; color: var(--gold); font-family: monospace;">6 أيام 23:59:59</div>
-            </div>
-
-            <div class="form-group">
-                <label>اختر طريقة السحب:</label>
-                <select>
-                    <option value="USDT-BEP20">USDT - BEP20</option>
-                    <option value="USDT-TRC20">USDT - TRC20</option>
-                    <option value="BingX">BingX UID</option>
-                    <option value="Payeer">Payeer Wallet</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>عنوان المحفظة / رقم الحساب:</label>
-                <input type="text" placeholder="أدخل العنوان هنا...">
-            </div>
-            <div class="form-group">
-                <label>المبلغ المراد سحبه ($):</label>
-                <input type="number" placeholder="50">
-            </div>
-            <button type="button" class="btn btn-gold" onclick="notify('تم العملية بقيد المراجعة')">تأكيد طلب السحب</button>
-        </div>
-    </div>
-
-    <!-- ACCOUNT VIEW -->
-    <div id="page-account" class="page-view">
-        <div class="section-card">
-            <div class="section-header"><i class="fa-solid fa-user-gear"></i> ملف الحساب والتوثيق</div>
-            
-            <div style="margin-bottom: 15px;">
-                <div style="font-size: 12px; color: var(--text-muted);">البريد الإلكتروني المسجل:</div>
-                <div id="accEmailDisplay" style="font-size: 15px; font-weight: 700; color: #fff;">-</div>
-            </div>
-
-            <div style="margin-bottom: 20px;">
-                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">حالة التوثيق (KYC):</div>
-                <span class="badge-pending">قيد المراجعة</span>
-            </div>
-
-            <hr style="border: none; border-top: 1px solid var(--card-border); margin: 15px 0;">
-
-            <div class="section-header"><i class="fa-solid fa-id-card"></i> تقديم طلب التوثيق</div>
-            <div class="form-group">
-                <label>الاسم الكامل:</label>
-                <input type="text" placeholder="الاسم كما في الهوية/الجواز...">
-            </div>
-
-            <div class="form-group">
-                <label>نوع الوثيقة:</label>
-                <select id="docTypeSelect" onchange="toggleDocFields()">
-                    <option value="id">بطاقة شخصية / هوية</option>
-                    <option value="passport">جواز سفر</option>
-                </select>
-            </div>
-
-            <div id="idCardFields">
-                <div class="form-group">
-                    <label>صورة الهوية (الوجه الأمامي):</label>
-                    <input type="file" accept="image/*">
+                <div class="qr-container">
+                    <p style="font-size: 13px; margin-bottom: 8px;">رمز QR للتحويل المباشر:</p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=0x7288dcac07613f69b7ab1be56996849bede68e03" alt="QR Code">
                 </div>
-                <div class="form-group">
-                    <label>صورة الهوية (الوجه الخلفي):</label>
-                    <input type="file" accept="image/*">
-                </div>
-            </div>
 
-            <div id="passportFields" style="display: none;">
-                <div class="form-group">
-                    <label>صورة جواز السفر:</label>
-                    <input type="file" accept="image/*">
+                <div class="input-group">
+                    <label>عنوان المحفظة للتحويل (اضغط للنسخ):</label>
+                    <div class="wallet-address-box" onclick="copyWalletAddress()" id="walletAddress">0x7288dcac07613f69b7ab1be56996849bede68e03</div>
                 </div>
-            </div>
 
-            <button type="button" class="btn btn-gold" onclick="notify('تم العملية بقيد المراجعة')">رفع وثائق التوثيق</button>
+                <button class="btn-primary" onclick="submitDeposit()">تأكيد التحويل للإيداع</button>
+            </div>
         </div>
+
+        <!-- تبويب السحب -->
+        <div id="tabWithdraw" class="hidden">
+            <div class="card">
+                <h3>سحب الأرباح</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 5px 0 15px 0;">
+                    متاح السحب كل 7 أيام (خصم رسوم شبكة 2%)
+                </p>
+
+                <div class="input-group">
+                    <label>وسيلة السحب</label>
+                    <select id="withdrawMethod">
+                        <option value="USDT_TRC20">USDT - TRC20</option>
+                        <option value="USDT_BEP20">USDT - BEP20</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>رابط محفظتك للسحب</label>
+                    <input type="text" id="withdrawAddress" placeholder="أدخل عنوان محفظتك">
+                </div>
+
+                <div class="input-group">
+                    <label>المبلغ المراد سحبه ($)</label>
+                    <input type="number" id="withdrawAmount" placeholder="0.00" oninput="calculateWithdrawNet()">
+                </div>
+
+                <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
+                    الصافي المستلم بعد الخصم (2%): $<span id="netWithdrawAmount">0.00</span>
+                </div>
+
+                <button class="btn-primary" onclick="processWithdrawal()">تأكيد طلب السحب</button>
+            </div>
+        </div>
+
+        <!-- شريط التنقل السفلي -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('Home', this)">الرئيسية والمهام</div>
+            <div class="nav-item" onclick="switchTab('Deposit', this)">الإيداع</div>
+            <div class="nav-item" onclick="switchTab('Withdraw', this)">السحب</div>
+        </div>
+
     </div>
 
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="showPage('home', this)"><i class="fa-solid fa-house"></i>الرئيسية</div>
-        <div class="nav-item" onclick="showPage('deposit', this)"><i class="fa-solid fa-qrcode"></i>إيداع</div>
-        <div class="nav-item" onclick="showPage('investments', this)"><i class="fa-solid fa-vault"></i>الاستثمارات</div>
-        <div class="nav-item" onclick="showPage('withdraw', this)"><i class="fa-solid fa-money-bill-transfer"></i>سحب</div>
-        <div class="nav-item" onclick="showPage('account', this)"><i class="fa-solid fa-user"></i>الحساب</div>
-    </div>
+</div>
 
-    <script>
-        // Custom Toast Notification
-        function notify(msg) {
-            const toast = document.getElementById('customToast');
-            toast.innerText = msg;
-            toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 3000);
-        }
+<script>
+    // القيم المحددة للإيداع
+    const depositAmounts = [10, 30, 50, 100, 150, 200, 300, 500, 700, 900, 1200, 1350, 1500, 1700, 1900, 2000];
+    let selectedDepositAmount = 0;
 
-        // Direct Login Logic Attached to Click Event
-        document.getElementById('loginBtn').addEventListener('click', function() {
-            const emailInput = document.getElementById('userEmailInput').value;
-            const email = emailInput ? emailInput : "user@nexttrade.com";
-            
-            // Hide Overlay Direct
-            const overlay = document.getElementById('authOverlay');
-            if(overlay) {
-                overlay.style.display = 'none';
-            }
-            
-            // Set Email Text
-            document.getElementById('accEmailDisplay').innerText = email;
-            
-            // Show Welcome
-            notify("تم تسجيل الدخول بنجاح!");
+    // حالة المستخدم المخزنة
+    let userData = {
+        email: '',
+        invested: 0,
+        withdrawable: 0,
+        lastTaskTime: null,
+        lastWithdrawTime: null
+    };
+
+    // تهيئة الخيارات عند التحميل
+    window.onload = function() {
+        initDepositGrid();
+        checkLoginSession();
+        startTimer();
+        simulateLiveMarket();
+    };
+
+    function initDepositGrid() {
+        const grid = document.getElementById('depositOptions');
+        grid.innerHTML = '';
+        depositAmounts.forEach(amt => {
+            const div = document.createElement('div');
+            div.className = 'deposit-option';
+            div.innerText = '$' + amt;
+            div.onclick = function() {
+                document.querySelectorAll('.deposit-option').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                selectedDepositAmount = amt;
+            };
+            grid.appendChild(div);
         });
+    }
 
-        // Render Investment Plans
-        const plansList = [10, 30, 50, 100, 150, 300, 500, 750, 1000, 1200, 1500, 1750, 2000];
-        const plansContainer = document.getElementById('plansContainer');
-        plansList.forEach(p => {
-            plansContainer.innerHTML += `
-                <div class="plan-card">
-                    <div style="font-size: 11px; color: var(--text-muted);">خطة استثمار</div>
-                    <div class="plan-price">$${p}</div>
-                    <button type="button" class="btn btn-gold" style="padding: 6px; font-size: 12px;" onclick="openInvestModal(${p})">استثمار الآن</button>
-                </div>
-            `;
-        });
+    function login() {
+        const email = document.getElementById('emailInput').value;
+        const pass = document.getElementById('passwordInput').value;
 
-        // QRCode Generator
-        window.onload = function() {
-            try {
-                new QRCode(document.getElementById("qrcode"), {
-                    text: "0x7288dcac07613f69b7ab1be56996849bede68e03",
-                    width: 140,
-                    height: 140
-                });
-            } catch(e) {
-                document.getElementById("qrcode").innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=0x7288dcac07613f69b7ab1be56996849bede68e03" width="140">`;
+        if (!email || !pass) {
+            alert('يرجى كتابة البريد الإلكتروني وكلمة المرور');
+            return;
+        }
+
+        // حفظ الجلسة محلياً
+        const savedData = localStorage.getItem('user_' + email);
+        if (savedData) {
+            userData = JSON.parse(savedData);
+        } else {
+            userData.email = email;
+            saveUserData();
+        }
+
+        showMainScreen();
+    }
+
+    function checkLoginSession() {
+        const activeUser = localStorage.getItem('activeUser');
+        if (activeUser) {
+            const savedData = localStorage.getItem('user_' + activeUser);
+            if (savedData) {
+                userData = JSON.parse(savedData);
+                showMainScreen();
             }
-        };
+        }
+    }
 
-        // General Functions
-        function copyAddress() {
-            const addr = document.getElementById('depositAddress');
-            addr.select();
-            document.execCommand('copy');
-            notify("تم نسخ عنوان المحفظة بنجاح!");
+    function showMainScreen() {
+        localStorage.setItem('activeUser', userData.email);
+        document.getElementById('authScreen').classList.add('hidden');
+        document.getElementById('mainScreen').classList.remove('hidden');
+        document.getElementById('userEmailDisplay').innerText = userData.email;
+        updateUI();
+    }
+
+    function logout() {
+        localStorage.removeItem('activeUser');
+        location.reload();
+    }
+
+    function saveUserData() {
+        if (userData.email) {
+            localStorage.setItem('user_' + userData.email, JSON.stringify(userData));
+        }
+    }
+
+    function updateUI() {
+        document.getElementById('investedAmount').innerText = userData.invested.toFixed(2);
+        document.getElementById('withdrawableAmount').innerText = userData.withdrawable.toFixed(2);
+    }
+
+    // التنقل بين التبويبات
+    function switchTab(tabName, element) {
+        document.getElementById('tabHome').classList.add('hidden');
+        document.getElementById('tabDeposit').classList.add('hidden');
+        document.getElementById('tabWithdraw').classList.add('hidden');
+
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+        document.getElementById('tab' + tabName).classList.remove('hidden');
+        element.classList.add('active');
+    }
+
+    // تنفيذ طلب الإيداع
+    function submitDeposit() {
+        if (selectedDepositAmount === 0) {
+            alert('يرجى اختيار مبلغ الإيداع أولاً');
+            return;
         }
 
-        function toggleDocFields() {
-            const type = document.getElementById('docTypeSelect').value;
-            document.getElementById('idCardFields').style.display = (type === 'id') ? 'block' : 'none';
-            document.getElementById('passportFields').style.display = (type === 'passport') ? 'block' : 'none';
+        // تحويل المبلغ مباشرة لقسم الاستثمار
+        userData.invested += selectedDepositAmount;
+        saveUserData();
+        updateUI();
+
+        alert(`تم استلام طلب إيداع بقيمة $${selectedDepositAmount}. تمت إضافة المبلغ تلقائياً لخطتك الاستثمارية!`);
+        selectedDepositAmount = 0;
+        document.querySelectorAll('.deposit-option').forEach(el => el.classList.remove('selected'));
+    }
+
+    // استلام المهام اليومية (الربح 10%)
+    function claimDailyTask() {
+        if (userData.invested <= 0) {
+            alert('عذراً! يجب عليك تنفيذ عملية إيداع أولاً للبدء بكسب الأرباح والمهام اليومية.');
+            return;
         }
 
-        function openInvestModal(amount) {
-            document.getElementById('modalInvestAmount').value = amount;
-            document.getElementById('investModal').style.display = 'flex';
+        const now = new Date().getTime();
+        const oneDay = 24 * 60 * 60 * 1000;
+
+        if (userData.lastTaskTime && (now - userData.lastTaskTime < oneDay)) {
+            alert('لقد استلمت ربح اليوم بالفعل! يرجى الانتظار حتى انتهاء عداد الـ 24 ساعة.');
+            return;
         }
 
-        function closeInvestModal() {
-            document.getElementById('investModal').style.display = 'none';
+        // حساب 10% من الاستثمار
+        const profit = userData.invested * 0.10;
+        userData.withdrawable += profit;
+        userData.lastTaskTime = now;
+
+        saveUserData();
+        updateUI();
+
+        alert(`تم تنفيذ المهمة بنجاح! تم إضافة $${profit.toFixed(2)} إلى أرباحك المتاحة للسحب.`);
+    }
+
+    // حساب السحب مع الخصم 2%
+    function calculateWithdrawNet() {
+        const amount = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+        const net = amount * 0.98; // خصم 2%
+        document.getElementById('netWithdrawAmount').innerText = net > 0 ? net.toFixed(2) : '0.00';
+    }
+
+    // معالجة السحب (كل 7 أيام)
+    function processWithdrawal() {
+        const address = document.getElementById('withdrawAddress').value;
+        const amount = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+
+        if (!address) {
+            alert('يرجى إدخال رابط المحفظة الخاط بالاستلام');
+            return;
         }
 
-        function showAppInstallModal() {
-            document.getElementById('appInstallModal').style.display = 'flex';
+        if (amount <= 0 || amount > userData.withdrawable) {
+            alert('المبلغ المطلوب غير متاح في رصيد الأرباح');
+            return;
         }
 
-        function closeAppInstallModal() {
-            document.getElementById('appInstallModal').style.display = 'none';
+        const now = new Date().getTime();
+        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+
+        if (userData.lastWithdrawTime && (now - userData.lastWithdrawTime < sevenDays)) {
+            alert('السحب متاح فقط مرة واحدة كل 7 أيام.');
+            return;
         }
 
-        function showPage(pageId, element) {
-            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('page-' + pageId).classList.add('active');
-            element.classList.add('active');
-        }
-    </script>
+        // خصم من الأرباح وتحديث التاريخ
+        userData.withdrawable -= amount;
+        userData.lastWithdrawTime = now;
+        saveUserData();
+        updateUI();
+
+        alert(`تم إرسال طلب السحب بنجاح! المبلغ الصافي بعد خصم 2%: $${(amount * 0.98).toFixed(2)} إلى المحفظة: ${address}`);
+        document.getElementById('withdrawAmount').value = '';
+        document.getElementById('netWithdrawAmount').innerText = '0.00';
+    }
+
+    // العداد التنازلي للـ 24 ساعة
+    function startTimer() {
+        setInterval(() => {
+            if (!userData.lastTaskTime) {
+                document.getElementById('countdownTimer').innerText = "00:00:00 (جاهز لاستلام الربح)";
+                return;
+            }
+
+            const now = new Date().getTime();
+            const distance = (userData.lastTaskTime + (24 * 60 * 60 * 1000)) - now;
+
+            if (distance < 0) {
+                document.getElementById('countdownTimer').innerText = "00:00:00 (جاهز الآن)";
+            } else {
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                document.getElementById('countdownTimer').innerText = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }, 1000);
+    }
+
+    // محاكاة أسعار التداول الحية
+    function simulateLiveMarket() {
+        setInterval(() => {
+            const btc = 64200 + (Math.random() * 200 - 100);
+            const eth = 2640 + (Math.random() * 20 - 10);
+            document.getElementById('btcPrice').innerText = '$' + btc.toFixed(2);
+            document.getElementById('ethPrice').innerText = '$' + eth.toFixed(2);
+        }, 3000);
+    }
+
+    function copyWalletAddress() {
+        const text = document.getElementById('walletAddress').innerText;
+        navigator.clipboard.writeText(text);
+        alert('تم نسخ عنوان المحفظة!');
+    }
+
+    function downloadApp() {
+        alert('جاري تنزيل ملف التطبيق (APK)...');
+    }
+</script>
+
 </body>
 </html>
