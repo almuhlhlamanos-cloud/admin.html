@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextTrade - منصة التداول والاستثمار</title>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <style>
+        :root {
+            --bg-color: #080c14;
+            --card-bg: #121824;
+            --accent-color: #00c853;
+            --accent-hover: #00e676;
+            --text-color: #ffffff;
+            --text-muted: #8a9ba8;
+            --danger-color: #ff5252;
+            --border-color: #1e293b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; padding-bottom: 75px; }
+        .container { width: 100%; max-width: 480px; padding: 12px; }
+
+        .app-download-bar {
+            background: linear-gradient(90deg, #1e293b, #0f172a);
+            border: 1px solid var(--border-color);
+            padding: 10px 15px; border-radius: 10px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
+        }
+        .app-download-bar button {
+            background-color: var(--accent-color); color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;
+        }
+
+        .auth-card, .card {
+            background-color: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 12px;
+        }
+        .input-group { margin-bottom: 15px; text-align: right; }
+        .input-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 13px; }
+        .input-group input, .input-group select {
+            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background-color: #080c14; color: white; font-size: 14px;
+        }
+
+        .btn-primary {
+            width: 100%; padding: 12px; background-color: var(--accent-color); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer;
+        }
+
+        .user-header {
+            background-color: var(--card-bg); padding: 12px 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border: 1px solid var(--border-color);
+        }
+
+        .wallet-overview { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .card h4 { color: var(--text-muted); font-size: 12px; margin-bottom: 5px; }
+        .card .amount { font-size: 18px; font-weight: bold; color: var(--accent-color); }
+
+        .task-box { background-color: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; border: 1px solid var(--border-color); }
+        .timer { font-size: 22px; font-weight: bold; color: var(--danger-color); margin: 8px 0; letter-spacing: 1px; }
+
+        .deposit-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
+        .deposit-option { background-color: #080c14; border: 1px solid var(--border-color); padding: 10px; text-align: center; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; }
+        .deposit-option.selected { border-color: var(--accent-color); color: var(--accent-color); background-color: rgba(0, 200, 83, 0.15); }
+
+        .wallet-address-box { background-color: #080c14; padding: 10px; border-radius: 6px; font-size: 11px; word-break: break-all; margin: 8px 0; border: 1px dashed var(--border-color); text-align: center; color: var(--accent-color); cursor: pointer; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-card { background-color: var(--card-bg); border: 1px solid var(--border-color); width: 85%; max-width: 380px; padding: 20px; border-radius: 12px; text-align: center; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--card-bg); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--border-color); max-width: 480px; margin: 0 auto; }
+        .nav-item { color: var(--text-muted); font-size: 12px; text-align: center; cursor: pointer; }
+        .nav-item.active { color: var(--accent-color); font-weight: bold; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="app-download-bar">
+        <span>تطبيق التداول المباشر</span>
+        <a href="app.apk" download style="text-decoration:none;">
+            <button type="button">تنزيل التطبيق</button>
+        </a>
+    </div>
+
+    <!-- تسجيل الدخول -->
+    <div id="authScreen" class="auth-card">
+        <h2 style="margin-bottom: 15px;">تسجيل الدخول</h2>
+        <div class="input-group">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="emailInput" placeholder="example@email.com">
+        </div>
+        <div class="input-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="passwordInput" placeholder="******">
+        </div>
+        <button class="btn-primary" onclick="login()">دخول الحساب</button>
+    </div>
+
+    <!-- الواجهة الرئيسية -->
+    <div id="mainScreen" class="hidden">
+        <div class="user-header">
+            <div>
+                <span style="color: var(--text-muted); font-size: 12px;">المستخدم:</span>
+                <span id="userEmailDisplay" style="font-size: 13px; font-weight: bold;">-</span>
+            </div>
+            <button onclick="logout()" style="background:none; border:none; color:var(--danger-color); cursor:pointer; font-size: 12px;">خروج</button>
+        </div>
+
+        <div class="wallet-overview">
+            <div class="card">
+                <h4>رصيد الاستثمار الحقيقي</h4>
+                <div class="amount">$<span id="investedAmount">0.00</span></div>
+            </div>
+            <div class="card">
+                <h4>الأرباح المتاحة للسحب</h4>
+                <div class="amount">$<span id="withdrawableAmount">0.00</span></div>
+            </div>
+        </div>
+
+        <!-- الرئيسية والمهام -->
+        <div id="tabHome">
+            <div class="task-box">
+                <h3>المهام اليومية (ربح 10%)</h3>
+                <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">يتاح الاستلام والسحب يومياً من الساعة 02:00</p>
+                <div class="timer" id="countdownTimer">00:00:00</div>
+                <button class="btn-primary" id="claimBtn" onclick="claimDailyTask()">استلام الربح اليومي</button>
+            </div>
+
+            <div class="card" style="height: 300px; padding: 10px;">
+                <h4 style="margin-bottom: 8px;">سوق التداول المباشر (BTC/USDT)</h4>
+                <div id="tradingview_chart" style="height: 240px;"></div>
+            </div>
+        </div>
+
+        <!-- الإيداع -->
+        <div id="tabDeposit" class="hidden">
+            <div class="card">
+                <h3>إيداع الأموال (USDT)</h3>
+                <p style="font-size: 12px; color: var(--text-muted);">اختر مبلغ الشحن وتحويل القيمة للمحفظة التالية:</p>
+                
+                <div class="deposit-grid" id="depositOptions"></div>
+
+                <div style="text-align: center; margin: 10px 0;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=0x7288dcac07613f69b7ab1be56996849bede68e03" alt="QR Code" style="border-radius:8px;">
+                </div>
+
+                <div class="input-group">
+                    <label>عنوان المحفظة (اضغط للنسخ):</label>
+                    <div class="wallet-address-box" onclick="copyWalletAddress()" id="walletAddress">0x7288dcac07613f69b7ab1be56996849bede68e03</div>
+                </div>
+
+                <div class="input-group">
+                    <label>رقم المعاملة / التحويل (TxHash):</label>
+                    <input type="text" id="txHashInput" placeholder="أدخل رقم المعاملة">
+                </div>
+
+                <button class="btn-primary" onclick="submitDeposit()">إرسال الطلب للأدمن للمراجعة</button>
+            </div>
+        </div>
+
+        <!-- السحب -->
+        <div id="tabWithdraw" class="hidden">
+            <div class="card">
+                <h3>سحب الأرباح اليومي</h3>
+                <p style="font-size: 11px; color: var(--text-muted);">الحد الأدنى للسحب هو 3$. يتاح السحب يومياً من الساعة 02:00.</p>
+
+                <div class="input-group" style="margin-top: 10px;">
+                    <label>عنوان المحفظة (TRC20/BEP20)</label>
+                    <input type="text" id="withdrawAddress" placeholder="أدخل عنوان محفظتك">
+                </div>
+
+                <div class="input-group">
+                    <label>المبلغ المراد سحبه ($)</label>
+                    <input type="number" id="withdrawAmount" placeholder="3.00 على الأقل" oninput="calculateWithdrawNet()">
+                </div>
+
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+                    الصافي للوصول (خصم 2%): $<span id="netWithdrawAmount">0.00</span>
+                </div>
+
+                <button class="btn-primary" onclick="processWithdrawal()">تأكيد طلب السحب</button>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('Home', this)">الرئيسية والمهام</div>
+            <div class="nav-item" onclick="switchTab('Deposit', this)">الإيداع</div>
+            <div class="nav-item" onclick="switchTab('Withdraw', this)">السحب</div>
+        </div>
+    </div>
+</div>
+
+<div id="customModal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <h3 id="modalTitle" style="color:var(--accent-color); margin-bottom:10px;">تنبيه</h3>
+        <p id="modalMessage" style="font-size:13px; margin-bottom:15px; line-height:1.4;"></p>
+        <button class="btn-primary" onclick="closeModal()">موافق</button>
+    </div>
+</div>
+
+<script>
+    const depositAmounts = [10, 30, 50, 100, 150, 200, 300, 500, 700, 900, 1200, 1350, 1500, 1700, 1900, 2000];
+    let selectedDepositAmount = 0;
+    let currentUser = null;
+
+    window.onload = function() {
+        initDepositGrid();
+        checkSession();
+        startTimer();
+        initTradingViewChart();
+    };
+
+    function showNotice(title, msg) {
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalMessage').innerText = msg;
+        document.getElementById('customModal').classList.remove('hidden');
+    }
+
+    function closeModal() { document.getElementById('customModal').classList.add('hidden'); }
+
+    function initDepositGrid() {
+        const grid = document.getElementById('depositOptions');
+        grid.innerHTML = '';
+        depositAmounts.forEach(amt => {
+            const div = document.createElement('div');
+            div.className = 'deposit-option';
+            div.innerText = '$' + amt;
+            div.onclick = function() {
+                document.querySelectorAll('.deposit-option').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                selectedDepositAmount = amt;
+            };
+            grid.appendChild(div);
+        });
+    }
+
+    function login() {
+        const email = document.getElementById('emailInput').value.trim();
+        const pass = document.getElementById('passwordInput').value.trim();
+
+        if (!email || !pass) {
+            showNotice('خطأ', 'يرجى إدخال البيانات كاملة.');
+            return;
+        }
+
+        let users = JSON.parse(localStorage.getItem('app_users') || '{}');
+        if (!users[email]) {
+            users[email] = { email: email, invested: 0, withdrawable: 0, lastTaskTime: null };
+            localStorage.setItem('app_users', JSON.stringify(users));
+        }
+
+        currentUser = email;
+        localStorage.setItem('active_session', email);
+        showMainScreen();
+    }
+
+    function checkSession() {
+        const session = localStorage.getItem('active_session');
+        if (session) {
+            currentUser = session;
+            showMainScreen();
+        }
+    }
+
+    function showMainScreen() {
+        document.getElementById('authScreen').classList.add('hidden');
+        document.getElementById('mainScreen').classList.remove('hidden');
+        document.getElementById('userEmailDisplay').innerText = currentUser;
+        updateUserData();
+    }
+
+    function logout() {
+        localStorage.removeItem('active_session');
+        location.reload();
+    }
+
+    function updateUserData() {
+        let users = JSON.parse(localStorage.getItem('app_users') || '{}');
+        let data = users[currentUser] || { invested: 0, withdrawable: 0 };
+        document.getElementById('investedAmount').innerText = parseFloat(data.invested).toFixed(2);
+        document.getElementById('withdrawableAmount').innerText = parseFloat(data.withdrawable).toFixed(2);
+    }
+
+    function switchTab(tabName, element) {
+        document.getElementById('tabHome').classList.add('hidden');
+        document.getElementById('tabDeposit').classList.add('hidden');
+        document.getElementById('tabWithdraw').classList.add('hidden');
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab' + tabName).classList.remove('hidden');
+        element.classList.add('active');
+    }
+
+    function submitDeposit() {
+        const txHash = document.getElementById('txHashInput').value.trim();
+        if (selectedDepositAmount === 0 || !txHash) {
+            showNotice('تنبيه', 'يرجى تحديد المبلغ وإدخال رقم المعاملة (TxHash).');
+            return;
+        }
+
+        let pendingDeposits = JSON.parse(localStorage.getItem('pending_deposits') || '[]');
+        pendingDeposits.push({
+            id: Date.now(),
+            user: currentUser,
+            amount: selectedDepositAmount,
+            txHash: txHash,
+            status: 'معلق',
+            date: new Date().toLocaleString('ar-EG')
+        });
+
+        localStorage.setItem('pending_deposits', JSON.stringify(pendingDeposits));
+        document.getElementById('txHashInput').value = '';
+        showNotice('تم الإرسال', `تم إرسال طلب شحن $${selectedDepositAmount} إلى الأدمن للمراجعة. عند الموافقة سيظهر الرصيد مباشرة في رصيد الاستثمار.`);
+    }
+
+    function claimDailyTask() {
+        let users = JSON.parse(localStorage.getItem('app_users') || '{}');
+        let user = users[currentUser];
+
+        if (!user || user.invested <= 0) {
+            showNotice('عذراً', 'يجب أن يتوفر رصيد استثماري نَشِط وموافق عليه من قبل الأدمن لبدء تنفيذ المهام.');
+            return;
+        }
+
+        const now = Date.now();
+        const oneDay = 24 * 60 * 60 * 1000;
+
+        if (user.lastTaskTime && (now - user.lastTaskTime < oneDay)) {
+            showNotice('تنبيه', 'المهام والسحب متاحة مرة واحدة كل 24 ساعة.');
+            return;
+        }
+
+        const profit = user.invested * 0.10;
+        user.withdrawable += profit;
+        user.lastTaskTime = now;
+        users[currentUser] = user;
+
+        localStorage.setItem('app_users', JSON.stringify(users));
+        updateUserData();
+        showNotice('نجاح', `تم تنفيذ المهمة بنجاح وإضافة $${profit.toFixed(2)} إلى الأرباح المتاحة للسحب.`);
+    }
+
+    function calculateWithdrawNet() {
+        const amt = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+        document.getElementById('netWithdrawAmount').innerText = (amt * 0.98).toFixed(2);
+    }
+
+    function processWithdrawal() {
+        const address = document.getElementById('withdrawAddress').value.trim();
+        const amount = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+
+        let users = JSON.parse(localStorage.getItem('app_users') || '{}');
+        let user = users[currentUser];
+
+        if (!address) {
+            showNotice('خطأ', 'يرجى كتابة عنوان محفظتك.');
+            return;
+        }
+
+        if (amount < 3) {
+            showNotice('حد أدنى', 'الحد الأدنى للسحب هو 3.00$ ولا يمكن سحب أقل من ذلك.');
+            return;
+        }
+
+        if (amount > user.withdrawable) {
+            showNotice('رصيد غير كافٍ', 'المبلغ المطلوب أكبر من الأرباح المتاحة لديك.');
+            return;
+        }
+
+        user.withdrawable -= amount;
+        users[currentUser] = user;
+        localStorage.setItem('app_users', JSON.stringify(users));
+
+        let withdrawals = JSON.parse(localStorage.getItem('pending_withdrawals') || '[]');
+        withdrawals.push({
+            id: Date.now(),
+            user: currentUser,
+            amount: amount,
+            net: amount * 0.98,
+            address: address,
+            status: 'معلق',
+            date: new Date().toLocaleString('ar-EG')
+        });
+        localStorage.setItem('pending_withdrawals', JSON.stringify(withdrawals));
+
+        updateUserData();
+        document.getElementById('withdrawAmount').value = '';
+        showNotice('تم تقديم الطلب', `تم إرسال طلب سحب $${amount} إلى الأدمن للمراجعة وتحويل المبلغ للمحفظة.`);
+    }
+
+    function startTimer() {
+        setInterval(() => {
+            let users = JSON.parse(localStorage.getItem('app_users') || '{}');
+            let user = users[currentUser];
+
+            if (!user || !user.lastTaskTime) {
+                document.getElementById('countdownTimer').innerText = "00:00:00 (جاهز للعمل)";
+                return;
+            }
+
+            const now = Date.now();
+            const distance = (user.lastTaskTime + (24 * 60 * 60 * 1000)) - now;
+
+            if (distance <= 0) {
+                document.getElementById('countdownTimer').innerText = "00:00:00 (متاح الآن)";
+            } else {
+                const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((distance % (1000 * 60)) / 1000);
+                document.getElementById('countdownTimer').innerText = 
+                    `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            }
+        }, 1000);
+    }
+
+    function initTradingViewChart() {
+        if (typeof TradingView !== 'undefined') {
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": "BINANCE:BTCUSDT",
+                "interval": "1",
+                "theme": "dark",
+                "style": "1",
+                "locale": "ar",
+                "hide_side_toolbar": true,
+                "container_id": "tradingview_chart"
+            });
+        }
+    }
+
+    function copyWalletAddress() {
+        navigator.clipboard.writeText(document.getElementById('walletAddress').innerText);
+        showNotice('تم النسخ', 'تم نسخ عنوان المحفظة بنجاح.');
+    }
+</script>
+</body>
+  </html>
