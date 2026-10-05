@@ -4,13 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NextTrade - منصة التداول والاستثمار</title>
+    <!-- TradingView Script -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <!-- Firebase Realtime Database SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
     <style>
         :root {
             --bg-color: #080c14;
             --card-bg: #121824;
             --accent-color: #00c853;
-            --accent-hover: #00e676;
             --text-color: #ffffff;
             --text-muted: #8a9ba8;
             --danger-color: #ff5252;
@@ -36,7 +40,7 @@
         }
         .input-group { margin-bottom: 15px; text-align: right; }
         .input-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 13px; }
-        .input-group input, .input-group select {
+        .input-group input {
             width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background-color: #080c14; color: white; font-size: 14px;
         }
 
@@ -84,7 +88,7 @@
 
     <!-- تسجيل الدخول -->
     <div id="authScreen" class="auth-card">
-        <h2 style="margin-bottom: 15px;">تسجيل الدخول</h2>
+        <h2 style="margin-bottom: 15px;">تسجيل الدخول / إنشاء حساب</h2>
         <div class="input-group">
             <label>البريد الإلكتروني</label>
             <input type="email" id="emailInput" placeholder="example@email.com">
@@ -93,7 +97,7 @@
             <label>كلمة المرور</label>
             <input type="password" id="passwordInput" placeholder="******">
         </div>
-        <button class="btn-primary" onclick="login()">دخول الحساب</button>
+        <button class="btn-primary" onclick="login()">دخول / تسجيل</button>
     </div>
 
     <!-- الواجهة الرئيسية -->
@@ -154,7 +158,7 @@
                     <input type="text" id="txHashInput" placeholder="أدخل رقم المعاملة">
                 </div>
 
-                <button class="btn-primary" onclick="submitDeposit()">إرسال الطلب للأدمن للمراجعة</button>
+                <button class="btn-primary" id="btnDepositSubmit" onclick="submitDeposit()">إرسال الطلب للأدمن للمراجعة</button>
             </div>
         </div>
 
@@ -199,9 +203,18 @@
 </div>
 
 <script>
+    // إعدادات خادم Firebase للربط المباشر أونلاين
+    const firebaseConfig = {
+        databaseURL: "https://nexttrade-live-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     const depositAmounts = [10, 30, 50, 100, 150, 200, 300, 500, 700, 900, 1200, 1350, 1500, 1700, 1900, 2000];
     let selectedDepositAmount = 0;
-    let currentUser = null;
+    let currentUserEmail = null;
+    let currentUserIdKey = null;
+    let userData = { invested: 0, withdrawable: 0, lastTaskTime: null };
 
     window.onload = function() {
         initDepositGrid();
@@ -217,6 +230,10 @@
     }
 
     function closeModal() { document.getElementById('customModal').classList.add('hidden'); }
+
+    function sanitizeKey(email) {
+        return email.replace(/[^a-zA-Z0-9]/g, "_");
+    }
 
     function initDepositGrid() {
         const grid = document.getElementById('depositOptions');
@@ -235,29 +252,48 @@
     }
 
     function login() {
-        const email = document.getElementById('emailInput').value.trim();
+        const email = document.getElementById('emailInput').value.trim().toLowerCase();
         const pass = document.getElementById('passwordInput').value.trim();
 
         if (!email || !pass) {
-            showNotice('خطأ', 'يرجى إدخال البيانات كاملة.');
+            showNotice('خطأ', 'يرجى إدخال البريد وكلمة المرور.');
             return;
         }
 
-        let users = JSON.parse(localStorage.getItem('app_users') || '{}');
-        if (!users[email]) {
-            users[email] = { email: email, invested: 0, withdrawable: 0, lastTaskTime: null };
-            localStorage.setItem('app_users', JSON.stringify(users));
-        }
+        currentUserEmail = email;
+        currentUserIdKey = sanitizeKey(email);
+        localStorage.setItem('active_session_email', email);
 
-        currentUser = email;
-        localStorage.setItem('active_session', email);
+        // الاستماع المباشر للتحديثات من السيرفر بخصوص حساب المستخدم
+        db.ref('users/' + currentUserIdKey).on('value', (snapshot) => {
+            if (snapshot.exists()) {
+                userData = snapshot.val();
+            } else {
+                userData = { email: email, invested: 0, withdrawable: 0, lastTaskTime: null };
+                db.ref('users/' + currentUserIdKey).set(userData);
+            }
+            updateUI();
+        });
+
         showMainScreen();
     }
 
     function checkSession() {
-        const session = localStorage.getItem('active_session');
-        if (session) {
-            currentUser = session;
+        const sessionEmail = localStorage.getItem('active_session_email');
+        if (sessionEmail) {
+            currentUserEmail = sessionEmail;
+            currentUserIdKey = sanitizeKey(sessionEmail);
+
+            db.ref('users/' + currentUserIdKey).on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    userData = snapshot.val();
+                } else {
+                    userData = { email: sessionEmail, invested: 0, withdrawable: 0, lastTaskTime: null };
+                    db.ref('users/' + currentUserIdKey).set(userData);
+                }
+                updateUI();
+            });
+
             showMainScreen();
         }
     }
@@ -265,20 +301,17 @@
     function showMainScreen() {
         document.getElementById('authScreen').classList.add('hidden');
         document.getElementById('mainScreen').classList.remove('hidden');
-        document.getElementById('userEmailDisplay').innerText = currentUser;
-        updateUserData();
+        document.getElementById('userEmailDisplay').innerText = currentUserEmail;
     }
 
     function logout() {
-        localStorage.removeItem('active_session');
+        localStorage.removeItem('active_session_email');
         location.reload();
     }
 
-    function updateUserData() {
-        let users = JSON.parse(localStorage.getItem('app_users') || '{}');
-        let data = users[currentUser] || { invested: 0, withdrawable: 0 };
-        document.getElementById('investedAmount').innerText = parseFloat(data.invested).toFixed(2);
-        document.getElementById('withdrawableAmount').innerText = parseFloat(data.withdrawable).toFixed(2);
+    function updateUI() {
+        document.getElementById('investedAmount').innerText = parseFloat(userData.invested || 0).toFixed(2);
+        document.getElementById('withdrawableAmount').innerText = parseFloat(userData.withdrawable || 0).toFixed(2);
     }
 
     function switchTab(tabName, element) {
@@ -297,46 +330,45 @@
             return;
         }
 
-        let pendingDeposits = JSON.parse(localStorage.getItem('pending_deposits') || '[]');
-        pendingDeposits.push({
-            id: Date.now(),
-            user: currentUser,
+        const newDepositRef = db.ref('deposits').push();
+        newDepositRef.set({
+            id: newDepositRef.key,
+            userKey: currentUserIdKey,
+            userEmail: currentUserEmail,
             amount: selectedDepositAmount,
             txHash: txHash,
             status: 'معلق',
+            timestamp: Date.now(),
             date: new Date().toLocaleString('ar-EG')
+        }).then(() => {
+            document.getElementById('txHashInput').value = '';
+            showNotice('تم الإرسال أونلاين', `تم إرسال طلب الشحن ($${selectedDepositAmount}) للأدمن فوراً. بمجرد تأكيده ستنزل القيمة في رصيدك الاستثماري مباشرة!`);
         });
-
-        localStorage.setItem('pending_deposits', JSON.stringify(pendingDeposits));
-        document.getElementById('txHashInput').value = '';
-        showNotice('تم الإرسال', `تم إرسال طلب شحن $${selectedDepositAmount} إلى الأدمن للمراجعة. عند الموافقة سيظهر الرصيد مباشرة في رصيد الاستثمار.`);
     }
 
     function claimDailyTask() {
-        let users = JSON.parse(localStorage.getItem('app_users') || '{}');
-        let user = users[currentUser];
-
-        if (!user || user.invested <= 0) {
-            showNotice('عذراً', 'يجب أن يتوفر رصيد استثماري نَشِط وموافق عليه من قبل الأدمن لبدء تنفيذ المهام.');
+        if (!userData || parseFloat(userData.invested || 0) <= 0) {
+            showNotice('عذراً', 'يجب أن يتوفر لديك رصيد استثماري حقيقي وموافق عليه من قبل الأدمن لبدء المهام.');
             return;
         }
 
         const now = Date.now();
         const oneDay = 24 * 60 * 60 * 1000;
 
-        if (user.lastTaskTime && (now - user.lastTaskTime < oneDay)) {
-            showNotice('تنبيه', 'المهام والسحب متاحة مرة واحدة كل 24 ساعة.');
+        if (userData.lastTaskTime && (now - userData.lastTaskTime < oneDay)) {
+            showNotice('تنبيه', 'المهام متاحة مرة واحدة فقط كل 24 ساعة.');
             return;
         }
 
-        const profit = user.invested * 0.10;
-        user.withdrawable += profit;
-        user.lastTaskTime = now;
-        users[currentUser] = user;
+        const profit = parseFloat(userData.invested) * 0.10;
+        const newWithdrawable = parseFloat(userData.withdrawable || 0) + profit;
 
-        localStorage.setItem('app_users', JSON.stringify(users));
-        updateUserData();
-        showNotice('نجاح', `تم تنفيذ المهمة بنجاح وإضافة $${profit.toFixed(2)} إلى الأرباح المتاحة للسحب.`);
+        db.ref('users/' + currentUserIdKey).update({
+            withdrawable: newWithdrawable,
+            lastTaskTime: now
+        }).then(() => {
+            showNotice('نجاح', `تم إضافة أرباح المهمة ($${profit.toFixed(2)}) لحسابك بنجاح.`);
+        });
     }
 
     function calculateWithdrawNet() {
@@ -348,57 +380,51 @@
         const address = document.getElementById('withdrawAddress').value.trim();
         const amount = parseFloat(document.getElementById('withdrawAmount').value) || 0;
 
-        let users = JSON.parse(localStorage.getItem('app_users') || '{}');
-        let user = users[currentUser];
-
         if (!address) {
-            showNotice('خطأ', 'يرجى كتابة عنوان محفظتك.');
+            showNotice('خطأ', 'يرجى إدخال عنوان المحفظة.');
             return;
         }
 
         if (amount < 3) {
-            showNotice('حد أدنى', 'الحد الأدنى للسحب هو 3.00$ ولا يمكن سحب أقل من ذلك.');
+            showNotice('الحد الأدنى', 'الحد الأدنى للسحب هو 3.00$ ولا يمكن سحب أقل من ذلك.');
             return;
         }
 
-        if (amount > user.withdrawable) {
-            showNotice('رصيد غير كافٍ', 'المبلغ المطلوب أكبر من الأرباح المتاحة لديك.');
+        if (amount > parseFloat(userData.withdrawable || 0)) {
+            showNotice('رصيد غير كافٍ', 'المبلغ المطلوبة أكبر من الأرباح المتاحة لديك.');
             return;
         }
 
-        user.withdrawable -= amount;
-        users[currentUser] = user;
-        localStorage.setItem('app_users', JSON.stringify(users));
+        const newWithdrawable = parseFloat(userData.withdrawable) - amount;
 
-        let withdrawals = JSON.parse(localStorage.getItem('pending_withdrawals') || '[]');
-        withdrawals.push({
-            id: Date.now(),
-            user: currentUser,
-            amount: amount,
-            net: amount * 0.98,
-            address: address,
-            status: 'معلق',
-            date: new Date().toLocaleString('ar-EG')
+        // خصم المبلغ محلياً وإرسال الطلب للسيرفر
+        db.ref('users/' + currentUserIdKey).update({ withdrawable: newWithdrawable }).then(() => {
+            const newWithdrawRef = db.ref('withdrawals').push();
+            newWithdrawRef.set({
+                id: newWithdrawRef.key,
+                userKey: currentUserIdKey,
+                userEmail: currentUserEmail,
+                amount: amount,
+                net: (amount * 0.98).toFixed(2),
+                address: address,
+                status: 'معلق',
+                date: new Date().toLocaleString('ar-EG')
+            }).then(() => {
+                document.getElementById('withdrawAmount').value = '';
+                showNotice('تم تقديم الطلب أونلاين', `تم إرسال طلب سحب $${amount} إلى لوحة الأدمن لتنفيذ التحويل.`);
+            });
         });
-        localStorage.setItem('pending_withdrawals', JSON.stringify(withdrawals));
-
-        updateUserData();
-        document.getElementById('withdrawAmount').value = '';
-        showNotice('تم تقديم الطلب', `تم إرسال طلب سحب $${amount} إلى الأدمن للمراجعة وتحويل المبلغ للمحفظة.`);
     }
 
     function startTimer() {
         setInterval(() => {
-            let users = JSON.parse(localStorage.getItem('app_users') || '{}');
-            let user = users[currentUser];
-
-            if (!user || !user.lastTaskTime) {
+            if (!userData || !userData.lastTaskTime) {
                 document.getElementById('countdownTimer').innerText = "00:00:00 (جاهز للعمل)";
                 return;
             }
 
             const now = Date.now();
-            const distance = (user.lastTaskTime + (24 * 60 * 60 * 1000)) - now;
+            const distance = (userData.lastTaskTime + (24 * 60 * 60 * 1000)) - now;
 
             if (distance <= 0) {
                 document.getElementById('countdownTimer').innerText = "00:00:00 (متاح الآن)";
@@ -433,4 +459,4 @@
     }
 </script>
 </body>
-  </html>
+</html>
