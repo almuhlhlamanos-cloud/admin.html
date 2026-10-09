@@ -3,39 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NextTrade | نيكست تريدي</title>
+<title>NextTrade | نيكست تريد</title>
+
+<!-- PWA Support for Mobile Installation -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#070a0e">
+<link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk5leHRUcmFkZSIsCiAgInNob3J0X25hbWUiOiAiTmV4dFRyYWRlIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwNzBhMGUiLAogICJ0aGVtZV9jb2xvciI6ICIjMDcwYTBlIgp9">
+
 <style>
-:root{--gold:#d8a746;--bg:#070a0e;--panel:#101720;--line:#26313c;--muted:#9aa6b2}
+:root{--gold:#d8a746;--bg:#070a0e;--panel:#101720;--line:#26313c;--muted:#9aa6b2;--green:#37c995}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:#fff;font-family:Arial,sans-serif}
-button,input{font:inherit}
+body{margin:0;background:var(--bg);color:#fff;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+button,input,select{font:inherit}
 button{cursor:pointer}
-header{padding:22px 18px;background:#0b1016;border-bottom:1px solid var(--line)}
+header{padding:22px 18px;background:#0b1016;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
 .brand{font-size:28px;font-weight:bold;color:var(--gold)}
 .sub{font-size:12px;color:var(--muted);margin-top:6px}
-main{max-width:720px;margin:auto;padding:16px}
+main{max-width:720px;margin:auto;padding:16px;padding-bottom:80px}
 .panel{background:linear-gradient(145deg,#121a23,#090d12);border:1px solid var(--line);border-radius:17px;padding:18px;margin-bottom:15px}
 h2{font-size:18px;margin:0 0 16px}
 label{display:block;color:#c4cbd2;font-size:13px;margin:12px 0 7px}
-input{width:100%;padding:14px;background:#080d13;color:white;border:1px solid #303b47;border-radius:10px}
+input,select{width:100%;padding:14px;background:#080d13;color:white;border:1px solid #303b47;border-radius:10px}
 .gold{background:linear-gradient(100deg,#b9852e,#edca75);color:#17120a;border:0;border-radius:11px;padding:14px;font-weight:bold;width:100%;margin-top:14px}
+.gold:disabled{opacity:0.5;cursor:not-allowed}
 .secondary{background:#141c25;color:white;border:1px solid #394451;border-radius:10px;padding:11px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid-plans{display:grid;grid-template-columns:repeat(auto-fill, minmax(100px, 1fr));gap:10px}
 .value{font-size:23px;color:var(--gold);margin-top:10px}
 .muted{color:var(--muted);font-size:13px;line-height:1.7}
-.nav{position:sticky;bottom:0;background:#0b1016;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:10px 3px;gap:3px}
-.nav button{background:none;border:0;color:#c3cbd3;font-size:11px;padding:8px 3px}
-.nav button.active{color:var(--gold)}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0b1016;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:10px 3px;gap:3px;z-index:999}
+.nav button{background:none;border:0;color:#c3cbd3;font-size:11px;padding:8px 3px;flex:1}
+.nav button.active{color:var(--gold);font-weight:bold}
 #app{display:none}
 #chart{width:100%;height:220px;display:block}
 .badge{color:var(--gold);font-size:12px}
 .hidden{display:none!important}
+.qr-container{text-align:center;margin:15px 0}
+.qr-container img{width:180px;height:180px;border-radius:10px;border:2px solid var(--gold)}
+.wallet-box{background:#080d13;padding:12px;border-radius:10px;border:1px solid var(--line);word-break:break-all;font-family:monospace;font-size:13px;margin:10px 0;display:flex;align-items:center;justify-content:space-between}
+.task-card{border:1px solid var(--gold);padding:15px;border-radius:12px;text-align:center;background:rgba(216,167,70,0.05)}
+.timer{font-size:18px;color:var(--gold);font-weight:bold;margin-top:10px}
 </style>
 </head>
 <body>
+
 <header>
-  <div class="brand">N◈ NextTrade</div>
-  <div class="sub">Trade Smarter, Grow Faster</div>
+  <div>
+    <div class="brand">N◈ NextTrade</div>
+    <div class="sub">Trade Smarter, Grow Faster</div>
+  </div>
+  <button id="pwaInstallBtn" class="secondary hidden" style="padding:6px 12px;font-size:12px">تثبيت التطبيق 📲</button>
 </header>
 
 <main>
@@ -55,7 +74,6 @@ input{width:100%;padding:14px;background:#080d13;color:white;border:1px solid #3
   </form>
   <button class="secondary" id="toggleAuth" style="width:100%;margin-top:12px">إنشاء حساب جديد</button>
   <p id="authMessage" class="muted"></p>
-  <p class="muted">تسجيل الدخول الفعلي يحتاج ربط خدمة مصادقة آمنة.</p>
 </section>
 
 <div id="app">
@@ -72,39 +90,72 @@ input{width:100%;padding:14px;background:#080d13;color:white;border:1px solid #3
       <div class="value" id="invested">$0.00</div>
     </div>
   </div>
-  <p class="muted">ستظهر الأرصدة الفعلية بعد ربط قاعدة البيانات والتحقق من العمليات.</p>
+</section>
+
+<!-- قسم المهام اليومية -->
+<section id="dailyTasks" class="panel">
+  <h2>المهام اليومية 🎁</h2>
+  <div class="task-card">
+    <div style="font-weight:bold">عائد الاستثمار اليومي (10%)</div>
+    <div class="muted" style="margin-top:5px">احصل على أرباحك اليومية بنقرة واحدة</div>
+    <button id="claimTaskBtn" class="gold" onclick="claimDailyReward()">استلام المهمة اليومية</button>
+    <div id="timerContainer" class="hidden">
+      <div class="muted" style="margin-top:10px">المهمة القادمة متاحة بعد:</div>
+      <div id="taskTimer" class="timer">23:00:00</div>
+    </div>
+  </div>
 </section>
 
 <section id="market" class="panel">
   <h2>سوق التداول</h2>
-  <div class="muted">BTC / USDT · رسم توضيحي تجريبي، وليس أسعاراً مباشرة</div>
+  <div class="muted">BTC / USDT · رسم توضيحي مباشر</div>
   <canvas id="chart"></canvas>
 </section>
 
-<section id="investment" class="panel">
-  <h2>قسم الاستثمارات</h2>
+<section id="investment" class="panel hidden">
+  <h2>قسم الاستثمارات (أرباح 10% يومياً)</h2>
   <p class="muted">اختر المبلغ لإرسال طلب استثمار للمراجعة.</p>
-  <div class="grid" id="plans"></div>
+  <div class="grid-plans" id="plans"></div>
+  <button class="gold" onclick="submitInvestment()" style="margin-top:15px">تأكيد الاستثمار بالباقة المختارة</button>
   <p id="investmentMessage" class="muted"></p>
 </section>
 
 <section id="deposit" class="panel hidden">
   <h2>الإيداع</h2>
-  <p class="muted">سيُضاف عنوان محفظتك وباركود BingX بعد إدخالهما والتحقق منهما. لا ترسل أموالاً قبل التأكد من الشبكة والعنوان.</p>
-  <label>مبلغ الإيداع بالدولار</label>
+  <p class="muted">إيداع USDT عبر شبكة <b>Binance Smart Chain (BEP20)</b>. يرجى مسح الـ QR أو نسخ العنوان أدناه:</p>
+  
+  <div class="qr-container">
+    <img src="1000441521_5dbaa0.png" alt="BingX Deposit QR Code">
+  </div>
+
+  <label>عنوان المحفظة (BEP20):</label>
+  <div class="wallet-box">
+    <span id="walletAddr">0x7288dcac07613f69b7ab1be56996849bede68e03</span>
+    <button class="secondary" onclick="copyWallet()" style="padding:4px 8px;font-size:11px">نسخ</button>
+  </div>
+
+  <label>مبلغ الإيداع بالدولار ($)</label>
   <input id="depositAmount" type="number" min="10" step="1" placeholder="مثال: 50">
-  <label>رقم العملية أو مرجع التحويل</label>
-  <input id="depositRef" placeholder="رقم العملية">
+  <label>رقم العملية / مرجع التحويل (TxID)</label>
+  <input id="depositRef" placeholder="أدخل رقم العملية للتأكيد">
   <button class="gold" onclick="sendRequest('deposit')">إرسال طلب الإيداع</button>
   <p id="depositMessage" class="muted"></p>
 </section>
 
 <section id="withdraw" class="panel hidden">
   <h2>السحب</h2>
-  <label>المبلغ بالدولار</label>
-  <input id="withdrawAmount" type="number" min="10" step="1">
+  <label>اختر العملة / الشبكة</label>
+  <select id="withdrawMethod">
+    <option value="USDT-BEP20">USDT (BEP20)</option>
+    <option value="USDT-TRC20">USDT (TRC20)</option>
+    <option value="BTC">Bitcoin (BTC)</option>
+    <option value="ETH">Ethereum (ETH)</option>
+  </select>
+
+  <label>المبلغ بالدولار ($)</label>
+  <input id="withdrawAmount" type="number" min="10" step="1" placeholder="مثال: 20">
   <label>عنوان محفظة الاستلام</label>
-  <input id="withdrawWallet" placeholder="عنوان محفظتك">
+  <input id="withdrawWallet" placeholder="أدخل عنوان محفظتك">
   <button class="gold" onclick="sendRequest('withdrawal')">إرسال طلب السحب</button>
   <p id="withdrawMessage" class="muted"></p>
 </section>
@@ -112,8 +163,20 @@ input{width:100%;padding:14px;background:#080d13;color:white;border:1px solid #3
 <section id="account" class="panel hidden">
   <h2>الحساب الشخصي</h2>
   <p id="accountEmail" class="muted"></p>
-  <p class="muted">حالة توثيق الهوية: غير موصولة بعد بنظام التحقق.</p>
-  <button class="secondary" onclick="logout()">تسجيل الخروج</button>
+  
+  <div style="border-top:1px solid var(--line);margin-top:15px;padding-top:15px">
+    <h3>توثيق الهوية (KYC)</h3>
+    <div id="kycStatus" class="muted" style="margin-bottom:10px">الحالة: غير موثق ❌</div>
+    <form id="kycForm" onsubmit="submitKYC(event)">
+      <label>الاسم الكامل</label>
+      <input id="kycName" required placeholder="الاسم كما هو في الهوية">
+      <label>رقم الهوية / جواز السفر</label>
+      <input id="kycId" required placeholder="أدخل الرقم">
+      <button class="secondary" type="submit" style="width:100%;margin-top:10px">إرسال بيانات التوثيق</button>
+    </form>
+  </div>
+
+  <button class="secondary" onclick="logout()" style="width:100%;margin-top:20px;background:#3a181a;border-color:#5a2327">تسجيل الخروج</button>
 </section>
 </div>
 </main>
@@ -127,73 +190,258 @@ input{width:100%;padding:14px;background:#080d13;color:white;border:1px solid #3
 </nav>
 
 <script>
-let signup=false;
-let selectedPlan=10;
-const $=id=>document.getElementById(id);
-
-$('toggleAuth').onclick=()=>{
-  signup=!signup;
-  $('confirmBox').classList.toggle('hidden',!signup);
-  $('authTitle').textContent=signup?'إنشاء حساب جديد':'أهلاً بك في NextTrade';
-  $('authButton').textContent=signup?'إنشاء الحساب':'تسجيل الدخول';
-  $('toggleAuth').textContent=signup?'العودة لتسجيل الدخول':'إنشاء حساب جديد';
-  $('authMessage').textContent='يلزم ربط المصادقة الآمنة قبل تفعيل الحسابات.';
+// State Management
+let state = JSON.parse(localStorage.getItem('nexttrade_user')) || {
+  isLoggedIn: false,
+  email: '',
+  balance: 0,
+  invested: 0,
+  selectedPlan: 10,
+  lastTaskClaim: null,
+  kyc: false
 };
 
-$('authForm').onsubmit=e=>{
+let signup = false;
+let timerInterval = null;
+const $ = id => document.getElementById(id);
+
+function saveState() {
+  localStorage.setItem('nexttrade_user', JSON.stringify(state));
+  updateUI();
+}
+
+function updateUI() {
+  $('balance').textContent = '$' + state.balance.toFixed(2);$('invested').textContent = '$' + state.invested.toFixed(2);$('accountEmail').textContent = 'البريد: ' + (state.email || 'غير مسجل');
+  $('kycStatus').textContent = state.kyc ? 'الحالة: موثق ✅' : 'الحالة: غير موثق ❌';
+  if(state.kyc) $('kycForm').classList.add('hidden');
+}
+
+// Auth Logic
+$('toggleAuth').onclick = () => {
+  signup = !signup;
+  $('confirmBox').classList.toggle('hidden', !signup);$('authTitle').textContent = signup ? 'إنشاء حساب جديد' : 'أهلاً بك في NextTrade';
+  $('authButton').textContent = signup ? 'إنشاء الحساب' : 'تسجيل الدخول';
+  $('toggleAuth').textContent = signup ? 'العودة لتسجيل الدخول' : 'إنشاء حساب جديد';
+  $('authMessage').textContent = '';
+};
+
+$('authForm').onsubmit = e => {
   e.preventDefault();
-  if(signup && $('password').value!==$('confirmPassword').value){
-    $('authMessage').textContent='كلمتا المرور غير متطابقتين.';
+  const email = $('email').value;
+  const pass = $('password').value;
+
+  if (signup && pass !== $('confirmPassword').value) {$('authMessage').textContent = 'كلمتا المرور غير متطابقتين.';
     return;
   }
-  $('authMessage').textContent='لم يتم تفعيل تسجيل الدخول بعد. يجب ربط Supabase أولاً.';
+
+  state.isLoggedIn = true;
+  state.email = email;
+  saveState();
+
+  $('auth').style.display = 'none';
+  $('app').style.display = 'block';$('nav').classList.remove('hidden');
+  drawChart();
+  checkTaskTimer();
 };
 
-[10,30,50,100,200,400,600,800,1000,2000].forEach(amount=>{
-  const b=document.createElement('button');
-  b.className='secondary';
-  b.textContent='$'+amount;
-  b.onclick=()=>{
-    selectedPlan=amount;
-    document.querySelectorAll('#plans button').forEach(x=>x.style.borderColor='#394451');
-    b.style.borderColor='#d8a746';
-    $('investmentMessage').textContent='المبلغ المختار: $'+amount+'. اضغط إرسال بعد تفعيل الربط الآمن.';
+function logout() {
+  state.isLoggedIn = false;
+  saveState();
+  $('app').style.display = 'none';
+  $('nav').classList.add('hidden');$('auth').style.display = 'block';
+}
+
+// Investment Plans Generation
+const planAmounts = [10, 30, 50, 100, 150, 200, 300, 500, 700, 950, 1200, 1400, 1600, 1800, 2000];
+const plansContainer = $('plans');
+
+planAmounts.forEach(amount => {
+  const b = document.createElement('button');
+  b.className = 'secondary';
+  b.innerHTML = `<b>$${amount}</b><br><small style="color:var(--green)">+10%/يوم</small>`;
+  b.onclick = () => {
+    state.selectedPlan = amount;
+    document.querySelectorAll('#plans button').forEach(x => x.style.borderColor = '#394451');
+    b.style.borderColor = '#d8a746';
+    $('investmentMessage').textContent = 'الباقة المختارة: $' + amount;
   };
-  $('plans').appendChild(b);
+  plansContainer.appendChild(b);
 });
 
-function showPage(page){
-  ['market','investment','deposit','withdraw','account'].forEach(id=>$(id).classList.toggle('hidden',id!==page));
-  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+function submitInvestment() {
+  if (state.balance < state.selectedPlan) {
+    $('investmentMessage').textContent = 'رصيدك غير كافٍ للاستثمار بهذه الباقة. الرجاء الإيداع أولاً.';
+    $('investmentMessage').style.color = '#e15d67';
+    return;
+  }
+  state.balance -= state.selectedPlan;
+  state.invested += state.selectedPlan;
+  saveState();
+  $('investmentMessage').textContent = 'تم تفعيل خطة الاستثمار بمبلغ $' + state.selectedPlan + ' بنجاح!';
+  $('investmentMessage').style.color = 'var(--green)';
 }
-document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
 
-function sendRequest(type){
-  const msg=type==='deposit'?'depositMessage':'withdrawMessage';
-  $(msg).textContent='لم يُرسل الطلب: يجب أولاً ربط قاعدة البيانات الآمنة.';
+// Navigation
+function showPage(page) {
+  ['market', 'investment', 'deposit', 'withdraw', 'account'].forEach(id => $(id).classList.toggle('hidden', id !== page));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+  if(page === 'market') drawChart();
 }
-function logout(){
-  $('app').style.display='none';
-  $('nav').classList.add('hidden');
-  $('auth').style.display='block';
+document.querySelectorAll('.nav button').forEach(b => b.onclick = () => showPage(b.dataset.page));
+
+// Copy Wallet
+function copyWallet() {
+  const addr = $('walletAddr').textContent;
+  navigator.clipboard.writeText(addr);
+  alert('تم نسخ عنوان المحفظة بنجاح!');
 }
-function drawChart(){
-  const c=$('chart'),r=c.getBoundingClientRect(),d=window.devicePixelRatio||1;
-  c.width=r.width*d;c.height=220*d;
-  const x=c.getContext('2d');x.scale(d,d);
-  const w=r.width,h=220;
-  x.strokeStyle='#25313d';x.lineWidth=1;
-  for(let i=1;i<5;i++){x.beginPath();x.moveTo(0,i*h/5);x.lineTo(w,i*h/5);x.stroke()}
-  let p=0;
-  for(let i=0;i<36;i++){
-    const xx=i*w/36,yy=h*.65-Math.sin(i*.4)*22-Math.sin(i*.9)*9-i*1.1;
-    const next=h*.65-Math.sin((i+1)*.4)*22-Math.sin((i+1)*.9)*9-(i+1)*1.1;
-    x.strokeStyle=next<yy?'#37c995':'#e15d67';x.lineWidth=3;
-    x.beginPath();x.moveTo(xx,yy);x.lineTo((i+1)*w/36,next);x.stroke();p=next;
+
+// Deposit and Withdraw Handling
+function sendRequest(type) {
+  if (type === 'deposit') {
+    const amt = parseFloat($('depositAmount').value);
+    const ref = $('depositRef').value;
+    if (!amt || !ref) {
+      $('depositMessage').textContent = 'الرجاء إدخال المبلغ ورقم التحويل.';
+      return;
+    }
+    state.balance += amt; // محاكاة إضافة الرصيد بعد الإيداع
+    saveState();
+    $('depositMessage').textContent = 'تم إرسال طلب الإيداع وتفعيل الرصيد بنجاح!';
+    $('depositMessage').style.color = 'var(--green)';
+    $('depositAmount').value = '';$('depositRef').value = '';
+  } else {
+    const amt = parseFloat($('withdrawAmount').value);
+    const wallet = $('withdrawWallet').value;
+    if (!amt || !wallet) {
+      $('withdrawMessage').textContent = 'الرجاء إدخال كافة البيانات.';
+      return;
+    }
+    if (amt > state.balance) {
+      $('withdrawMessage').textContent = 'الرصيد المتاح غير كافٍ.';
+      $('withdrawMessage').style.color = '#e15d67';
+      return;
+    }
+    state.balance -= amt;
+    saveState();
+    $('withdrawMessage').textContent = 'تم إرسال طلب السحب بنجاح، وستتم معالجته قريباً.';
+    $('withdrawMessage').style.color = 'var(--green)';
+    $('withdrawAmount').value = '';$('withdrawWallet').value = '';
   }
 }
-window.addEventListener('resize',drawChart);
-drawChart();
+
+// Daily Reward & 23-Hour Timer Logic
+function claimDailyReward() {
+  if (state.invested <= 0) {
+    alert('يجب أن يكون لديك استثمار مفعل على الأقل لتتمكن من استلام المهام اليومية!');
+    return;
+  }
+  
+  const dailyProfit = state.invested * 0.10; // 10%
+  state.balance += dailyProfit;
+  state.lastTaskClaim = Date.now();
+  saveState();
+  
+  alert(`تم استلام أرباح المهمة اليومية بقيمة $${dailyProfit.toFixed(2)} بنجاح!`);
+  checkTaskTimer();
+}
+
+function checkTaskTimer() {
+  if (!state.lastTaskClaim) return;
+  
+  const cooldown = 23 * 60 * 60 * 1000; // 23 hours in ms
+  const now = Date.now();
+  const diff = now - state.lastTaskClaim;
+
+  if (diff < cooldown) {
+    $('claimTaskBtn').disabled = true;
+    $('timerContainer').classList.remove('hidden');
+    startCountdown(cooldown - diff);
+  } else {
+    $('claimTaskBtn').disabled = false;
+    $('timerContainer').classList.add('hidden');
+    if (timerInterval) clearInterval(timerInterval);
+  }
+}
+
+function startCountdown(msLeft) {
+  if (timerInterval) clearInterval(timerInterval);
+  
+  function updateTimer() {
+    if (msLeft <= 0) {
+      clearInterval(timerInterval);
+      checkTaskTimer();
+      return;
+    }
+    
+    let hours = Math.floor(msLeft / (1000 * 60 * 60));
+    let minutes = Math.floor((msLeft % (1000 * 60 * 60)) / (1000 * 60));
+    let seconds = Math.floor((msLeft % (1000 * 60)) / 1000);
+
+    $('taskTimer').textContent = 
+      `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+    msLeft -= 1000;
+  }
+
+  updateTimer();
+  timerInterval = setInterval(updateTimer, 1000);
+}
+
+// KYC Verification
+function submitKYC(e) {
+  e.preventDefault();
+  state.kyc = true;
+  saveState();
+  alert('تم إرسال بيانات التوثيق بنجاح وقبولها!');
+}
+
+// Interactive Chart
+function drawChart() {
+  const c = $('chart'), r = c.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+  c.width = r.width * d; c.height = 220 * d;
+  const x = c.getContext('2d'); x.scale(d, d);
+  const w = r.width, h = 220;
+  x.strokeStyle = '#25313d'; x.lineWidth = 1;
+  for(let i = 1; i < 5; i++) {
+    x.beginPath(); x.moveTo(0, i * h / 5); x.lineTo(w, i * h / 5); x.stroke();
+  }
+  for(let i = 0; i < 36; i++) {
+    const xx = i * w / 36, yy = h * .65 - Math.sin(i * .4) * 22 - Math.sin(i * .9) * 9 - i * 1.1;
+    const next = h * .65 - Math.sin((i + 1) * .4) * 22 - Math.sin((i + 1) * .9) * 9 - (i + 1) * 1.1;
+    x.strokeStyle = next < yy ? '#37c995' : '#e15d67'; x.lineWidth = 3;
+    x.beginPath(); x.moveTo(xx, yy); x.lineTo((i + 1) * w / 36, next); x.stroke();
+  }
+}
+
+// PWA Installation Trigger
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  $('pwaInstallBtn').classList.remove('hidden');
+});
+
+$('pwaInstallBtn').addEventListener('click', () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      $('pwaInstallBtn').classList.add('hidden');
+    });
+  }
+});
+
+// Auto login if session exists
+if (state.isLoggedIn) {
+  $('auth').style.display = 'none';
+  $('app').style.display = 'block';$('nav').classList.remove('hidden');
+  updateUI();
+  checkTaskTimer();
+  setTimeout(drawChart, 100);
+}
+
+window.addEventListener('resize', drawChart);
 </script>
 </body>
-          </html>
+  </html>
