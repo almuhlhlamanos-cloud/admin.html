@@ -1,268 +1,218 @@
--- ==========================================
--- NextTrade Database Setup
--- ==========================================
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071326">
+<title>NexTrade</title>
 
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#06101f;color:#f4f8ff;
+ font-family:Arial,Tahoma,sans-serif
+}
+header{
+ padding:20px;background:#0b1b31;border-bottom:1px solid #24466c;
+ display:flex;justify-content:space-between;align-items:center
+}
+.logo{font-size:25px;font-weight:bold;color:#29baff}
+.container{max-width:900px;margin:auto;padding:15px}
+.card{
+ background:#0b1b31;border:1px solid #203c5c;
+ border-radius:16px;padding:18px;margin-bottom:15px
+}
+h1{font-size:27px}
+h2{font-size:20px}
+p{color:#a8bdd6;line-height:1.8}
+.balance{font-size:34px;font-weight:bold;color:#fff}
+button,.button{
+ border:0;border-radius:10px;padding:12px 15px;
+ background:#1677ff;color:white;font-weight:bold;
+ cursor:pointer;text-decoration:none;display:inline-block
+}
+.secondary{background:#142c49;border:1px solid #294766}
+nav{display:flex;gap:7px;overflow-x:auto;padding:12px 0}
+nav button{white-space:nowrap}
+.view{display:none}
+.view.active{display:block}
+input,select{
+ width:100%;padding:12px;margin:7px 0 14px;
+ background:#061426;color:white;border:1px solid #294766;
+ border-radius:9px
+}
+label{display:block;color:#a8bdd6;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.plan{border:1px solid #294766;border-radius:13px;padding:15px;margin:10px 0}
+.price{font-size:25px;font-weight:bold;color:#32c7ff}
+.note{background:#302713;color:#ffe2a0;padding:12px;border-radius:10px;line-height:1.8}
+.muted{color:#a8bdd6;font-size:13px}
+.row{padding:12px 0;border-bottom:1px solid #203c5c;overflow-wrap:anywhere}
+footer{text-align:center;color:#8198b4;padding:25px;font-size:12px}
+@media(min-width:650px){.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.plans .plan{margin:0}.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
 
--- 1. User profiles
-CREATE TABLE IF NOT EXISTS public.nt_profiles (
-    user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    full_name TEXT NOT NULL DEFAULT '',
-    email TEXT,
-    verification_status TEXT NOT NULL DEFAULT 'unverified'
-        CHECK (verification_status IN ('unverified', 'pending', 'verified', 'rejected')),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+<body>
+<header>
+ <div>
+  <div class="logo">NexTrade</div>
+  <small>Invest · Trade · Grow</small>
+ </div>
+ <span class="muted">نسخة أولية</span>
+</header>
 
--- 2. Wallets
-CREATE TABLE IF NOT EXISTS public.nt_wallets (
-    user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    balance NUMERIC(18,2) NOT NULL DEFAULT 0 CHECK (balance >= 0),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+<div class="container">
 
--- 3. Admin accounts
-CREATE TABLE IF NOT EXISTS public.nt_admins (
-    user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+<section class="card">
+ <p>أهلاً بك في NexTrade</p>
+ <h1>استثمر بوعي، وتابع حسابك بمكان واحد.</h1>
+ <p>واجهة عربية لمتابعة الحساب والخطط والطلبات.</p>
+ <button onclick="openTab('plans')">استكشف الخطط</button>
+ <button class="secondary" onclick="openTab('account')">حسابي</button>
+</section>
 
--- 4. Deposit and withdrawal requests
-CREATE TABLE IF NOT EXISTS public.nt_transactions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    transaction_type TEXT NOT NULL
-        CHECK (transaction_type IN ('deposit', 'withdrawal')),
-    amount NUMERIC(18,2) NOT NULL CHECK (amount > 0),
-    payment_reference TEXT,
-    status TEXT NOT NULL DEFAULT 'pending'
-        CHECK (status IN ('pending', 'approved', 'rejected')),
-    admin_note TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    reviewed_at TIMESTAMPTZ
-);
+<section class="card">
+ <p>الرصيد المسجل محلياً — تجريبي فقط</p>
+ <div class="balance">$0.00</div>
+ <p>لا توجد أموال مؤكدة أو معاملات مالية مرتبطة بهذه النسخة.</p>
+ <button onclick="openTab('deposit')">الإيداع</button>
+ <button class="secondary" onclick="openTab('withdraw')">السحب</button>
+</section>
 
--- 5. Investments
-CREATE TABLE IF NOT EXISTS public.nt_investments (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    plan_amount NUMERIC(18,2) NOT NULL CHECK (plan_amount > 0),
-    status TEXT NOT NULL DEFAULT 'pending'
-        CHECK (status IN ('pending', 'active', 'completed', 'rejected', 'cancelled')),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+<nav>
+ <button onclick="openTab('home')">الرئيسية</button>
+ <button onclick="openTab('plans')">الاستثمار</button>
+ <button onclick="openTab('deposit')">الإيداع</button>
+ <button onclick="openTab('withdraw')">السحب</button>
+ <button onclick="openTab('history')">سجل العمليات</button>
+ <button onclick="openTab('kyc')">التوثيق</button>
+ <button onclick="openTab('account')">الملف الشخصي</button>
+</nav>
 
--- 6. Identity verification requests
-CREATE TABLE IF NOT EXISTS public.nt_kyc_requests (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    full_name TEXT NOT NULL,
-    front_image_path TEXT NOT NULL,
-    back_image_path TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'pending'
-        CHECK (status IN ('pending', 'approved', 'rejected')),
-    admin_note TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    reviewed_at TIMESTAMPTZ
-);
+<section id="home" class="view active">
+ <div class="card">
+  <h2>مرحباً بك في NexTrade</h2>
+  <p>من هنا يمكنك استعراض الأقسام ومتابعة الطلبات المسجلة على هذا الجهاز.</p>
+  <button onclick="openTab('history')">عرض سجل العمليات</button>
+ </div>
+ <div class="card">
+  <h2>آخر العمليات</h2>
+  <div id="recent" class="muted">لا توجد عمليات حتى الآن.</div>
+ </div>
+</section>
 
--- ==========================================
--- Admin verification function
--- ==========================================
+<section id="plans" class="view">
+ <h2>خطط الاستثمار</h2>
+ <div class="note">الخطط التالية توضيحية فقط، ولا تمثل عرضاً استثمارياً فعلياً أو عائداً مضموناً.</div>
+ <div class="plans">
+  <div class="plan">
+   <h2>خطة البداية</h2>
+   <div class="price">$10</div>
+   <p>خطة توضيحية</p>
+   <button onclick="demo()">اختيار الخطة</button>
+  </div>
+  <div class="plan">
+   <h2>خطة النمو</h2>
+   <div class="price">$50</div>
+   <p>خطة توضيحية</p>
+   <button onclick="demo()">اختيار الخطة</button>
+  </div>
+  <div class="plan">
+   <h2>الخطة المتقدمة</h2>
+   <div class="price">$100</div>
+   <p>خطة توضيحية</p>
+   <button onclick="demo()">اختيار الخطة</button>
+  </div>
+ </div>
+</section>
 
-CREATE OR REPLACE FUNCTION public.nt_is_admin()
-RETURNS BOOLEAN
-LANGUAGE SQL
-STABLE
-SECURITY DEFINER
-SET search_path = ''
-AS $$
-    SELECT EXISTS (
-        SELECT 1
-        FROM public.nt_admins
-        WHERE user_id = (SELECT auth.uid())
-    );
-$$;
+<section id="deposit" class="view">
+ <div class="card">
+  <h2>طلب إيداع</h2>
+  <div class="note">لم تتم إضافة عنوان محفظة بعد. لا تحوّل أموالاً قبل التأكد من العنوان والشبكة وآلية التحقق.</div>
+  <form onsubmit="return submitRequest(event,'إيداع')">
+   <label>العملة</label>
+   <select id="depAsset"><option>USDT</option><option>BNB</option><option>BTC</option><option>ETH</option></select>
+   <label>الشبكة</label>
+   <select id="depNetwork"><option>غير محددة</option><option>BEP20</option><option>ERC20</option><option>TRC20</option></select>
+   <label>المبلغ (تسجيل تجريبي فقط)</label>
+   <input id="depAmount" type="number" min="0.01" step="0.01" required>
+   <label>معرّف المعاملة، إن توفر</label>
+   <input id="depTx" maxlength="120">
+   <button type="submit">تسجيل طلب تجريبي</button>
+  </form>
+ </div>
+</section>
 
--- ==========================================
--- Automatically create profile and wallet
--- when a user signs up
--- ==========================================
+<section id="withdraw" class="view">
+ <div class="card">
+  <h2>طلب سحب</h2>
+  <div class="note">هذا النموذج لا يرسل الأموال، ولا يتحقق من الرصيد أو ينفّذ التحويلات.</div>
+  <form onsubmit="return submitRequest(event,'سحب')">
+   <label>العملة</label>
+   <select id="withAsset"><option>USDT</option><option>BNB</option><option>BTC</option><option>ETH</option></select>
+   <label>الشبكة</label>
+   <select id="withNetwork"><option>BEP20</option><option>ERC20</option><option>TRC20</option></select>
+   <label>المبلغ</label>
+   <input id="withAmount" type="number" min="0.01" step="0.01" required>
+   <label>عنوان المستلم</label>
+   <input id="withAddress" maxlength="160" required>
+   <button type="submit">تسجيل طلب تجريبي</button>
+  </form>
+ </div>
+</section>
 
-CREATE OR REPLACE FUNCTION public.nt_handle_new_user()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = ''
-AS $$
-BEGIN
-    INSERT INTO public.nt_profiles (user_id, full_name, email)
-    VALUES (
-        NEW.id,
-        COALESCE(NEW.raw_user_meta_data ->> 'full_name', ''),
-        NEW.email
-    )
-    ON CONFLICT (user_id) DO NOTHING;
+<section id="history" class="view">
+ <div class="card">
+  <h2>سجل العمليات</h2>
+  <div id="historyList" class="muted">لا توجد عمليات.</div>
+  <button class="secondary" onclick="clearHistory()">مسح السجل المحلي</button>
+ </div>
+</section>
 
-    INSERT INTO public.nt_wallets (user_id)
-    VALUES (NEW.id)
-    ON CONFLICT (user_id) DO NOTHING;
+<section id="kyc" class="view">
+ <div class="card">
+  <h2>توثيق الهوية KYC</h2>
+  <div class="note">التوثيق الحقيقي غير مفعّل. لا تدخل أو ترفع معلومات هوية حساسة في هذه النسخة.</div>
+  <form onsubmit="event.preventDefault();alert('هذه نسخة تجريبية؛ لم يتم توثيق الهوية فعلياً.')">
+   <label>الاسم الكامل</label>
+   <input maxlength="100" required>
+   <label>بلد الإقامة</label>
+   <input maxlength="80" required>
+   <button type="submit">متابعة تجريبية</button>
+  </form>
+ </div>
+</section>
 
-    RETURN NEW;
-END;
-$$;
+<section id="account" class="view">
+ <div class="card">
+  <h2>الملف الشخصي</h2>
+  <form onsubmit="saveProfile(event)">
+   <label>اسم العرض</label>
+   <input id="profileName" maxlength="80">
+   <label>البريد الإلكتروني</label>
+   <input id="profileEmail" type="email">
+   <button type="submit">حفظ على هذا الجهاز</button>
+  </form>
+  <p class="muted">تسجيل الدخول وقاعدة البيانات غير مفعّلين بعد.</p>
+ </div>
+</section>
 
-DROP TRIGGER IF EXISTS nt_on_auth_user_created ON auth.users;
+<section class="card">
+ <h2>التواصل</h2>
+ <p>للتواصل عبر تيليغرام، استخدم الرابط التالي.</p>
+ <a class="button" href="https://t.me/15594067202" target="_blank" rel="noopener">فتح تيليغرام</a>
+ <p class="muted">قد لا يعمل الرابط مباشرة إذا لم يكن الرقم مرتبطاً باسم مستخدم عام على تيليغرام.</p>
+</section>
 
-CREATE TRIGGER nt_on_auth_user_created
-AFTER INSERT ON auth.users
-FOR EACH ROW
-EXECUTE FUNCTION public.nt_handle_new_user();
+</div>
 
--- ==========================================
--- Enable Row Level Security
--- ==========================================
+<footer>
+ NexTrade · واجهة أولية تجريبية · لا تنفذ معاملات مالية حقيقية
+</footer>
 
-ALTER TABLE public.nt_profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.nt_wallets ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.nt_admins ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.nt_transactions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.nt_investments ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.nt_kyc_requests ENABLE ROW LEVEL SECURITY;
-
--- ==========================================
--- Profiles policies
--- ==========================================
-
-DROP POLICY IF EXISTS nt_profiles_read ON public.nt_profiles;
-CREATE POLICY nt_profiles_read
-ON public.nt_profiles
-FOR SELECT TO authenticated
-USING (user_id = (SELECT auth.uid()) OR public.nt_is_admin());
-
-DROP POLICY IF EXISTS nt_profiles_insert ON public.nt_profiles;
-CREATE POLICY nt_profiles_insert
-ON public.nt_profiles
-FOR INSERT TO authenticated
-WITH CHECK (user_id = (SELECT auth.uid()));
-
-DROP POLICY IF EXISTS nt_profiles_update ON public.nt_profiles;
-CREATE POLICY nt_profiles_update
-ON public.nt_profiles
-FOR UPDATE TO authenticated
-USING (user_id = (SELECT auth.uid()) OR public.nt_is_admin())
-WITH CHECK (user_id = (SELECT auth.uid()) OR public.nt_is_admin());
-
--- ==========================================
--- Wallet policies
--- Users can read their own balance.
--- Balance changes must be performed by a
--- trusted server-side transaction process.
--- ==========================================
-
-DROP POLICY IF EXISTS nt_wallets_read ON public.nt_wallets;
-CREATE POLICY nt_wallets_read
-ON public.nt_wallets
-FOR SELECT TO authenticated
-USING (user_id = (SELECT auth.uid()) OR public.nt_is_admin());
-
--- ==========================================
--- Transaction policies
--- ==========================================
-
-DROP POLICY IF EXISTS nt_transactions_read ON public.nt_transactions;
-CREATE POLICY nt_transactions_read
-ON public.nt_transactions
-FOR SELECT TO authenticated
-USING (user_id = (SELECT auth.uid()) OR public.nt_is_admin());
-
-DROP POLICY IF EXISTS nt_transactions_insert ON public.nt_transactions;
-CREATE POLICY nt_transactions_insert
-ON public.nt_transactions
-FOR INSERT TO authenticated
-WITH CHECK (
-    user_id = (SELECT auth.uid())
-    AND status = 'pending'
-    AND amount > 0
-);
-
-DROP POLICY IF EXISTS nt_transactions_admin_update ON public.nt_transactions;
-CREATE POLICY nt_transactions_admin_update
-ON public.nt_transactions
-FOR UPDATE TO authenticated
-USING (public.nt_is_admin())
-WITH CHECK (public.nt_is_admin());
-
--- ==========================================
--- Investment policies
--- ==========================================
-
-DROP POLICY IF EXISTS nt_investments_read ON public.nt_investments;
-CREATE POLICY nt_investments_read
-ON public.nt_investments
-FOR SELECT TO authenticated
-USING (user_id = (SELECT auth.uid()) OR public.nt_is_admin());
-
-DROP POLICY IF EXISTS nt_investments_insert ON public.nt_investments;
-CREATE POLICY nt_investments_insert
-ON public.nt_investments
-FOR INSERT TO authenticated
-WITH CHECK (
-    user_id = (SELECT auth.uid())
-    AND status = 'pending'
-    AND plan_amount > 0
-);
-
-DROP POLICY IF EXISTS nt_investments_admin_update ON public.nt_investments;
-CREATE POLICY nt_investments_admin_update
-ON public.nt_investments
-FOR UPDATE TO authenticated
-USING (public.nt_is_admin())
-WITH CHECK (public.nt_is_admin());
-
--- ==========================================
--- KYC policies
--- ==========================================
-
-DROP POLICY IF EXISTS nt_kyc_read ON public.nt_kyc_requests;
-CREATE POLICY nt_kyc_read
-ON public.nt_kyc_requests
-FOR SELECT TO authenticated
-USING (user_id = (SELECT auth.uid()) OR public.nt_is_admin());
-
-DROP POLICY IF EXISTS nt_kyc_insert ON public.nt_kyc_requests;
-CREATE POLICY nt_kyc_insert
-ON public.nt_kyc_requests
-FOR INSERT TO authenticated
-WITH CHECK (
-    user_id = (SELECT auth.uid())
-    AND status = 'pending'
-);
-
-DROP POLICY IF EXISTS nt_kyc_admin_update ON public.nt_kyc_requests;
-CREATE POLICY nt_kyc_admin_update
-ON public.nt_kyc_requests
-FOR UPDATE TO authenticated
-USING (public.nt_is_admin())
-WITH CHECK (public.nt_is_admin());
-
--- ==========================================
--- Indexes for faster queries
--- ==========================================
-
-CREATE INDEX IF NOT EXISTS nt_transactions_user_idx
-ON public.nt_transactions (user_id, created_at DESC);
-
-CREATE INDEX IF NOT EXISTS nt_transactions_status_idx
-ON public.nt_transactions (status);
-
-CREATE INDEX IF NOT EXISTS nt_investments_user_idx
-ON public.nt_investments (user_id, created_at DESC);
-
-CREATE INDEX IF NOT EXISTS nt_kyc_user_idx
-ON public.nt_kyc_requests (user_id, created_at DESC);
-
--- ==========================================
--- Done
--- ==========================================
+<script>
+const KEY='nextrade_ui_demo';
+let operations=[];
+try{operations=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(operations))operations=[]}catch(e){operations
