@@ -2,217 +2,208 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#071326">
-<title>NexTrade</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#061020">
+<title>NexTrade | Invest · Trade · Grow</title>
 
 <style>
+:root{
+ --bg:#050d1b;
+ --panel:#0b1930;
+ --panel2:#102441;
+ --border:#203c60;
+ --blue:#1677ff;
+ --cyan:#27baff;
+ --text:#f2f6ff;
+ --muted:#91a9c7;
+ --green:#22d69a;
+ --red:#ff5268;
+}
 *{box-sizing:border-box}
 body{
- margin:0;background:#06101f;color:#f4f8ff;
- font-family:Arial,Tahoma,sans-serif
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,Tahoma,sans-serif;
+ font-size:14px;padding-bottom:85px
 }
-header{
- padding:20px;background:#0b1b31;border-bottom:1px solid #24466c;
- display:flex;justify-content:space-between;align-items:center
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:active{transform:scale(.98)}
+a{color:inherit;text-decoration:none}
+.topbar{
+ position:sticky;top:0;z-index:10;
+ display:flex;justify-content:space-between;align-items:center;
+ padding:15px 18px;background:#08152a;
+ border-bottom:1px solid var(--border)
 }
-.logo{font-size:25px;font-weight:bold;color:#29baff}
-.container{max-width:900px;margin:auto;padding:15px}
+.brand{font-size:24px;font-weight:800;color:var(--cyan)}
+.brand small{display:block;font-size:10px;color:var(--muted);font-weight:400}
+.avatar{
+ width:42px;height:42px;border-radius:50%;
+ display:grid;place-items:center;background:#17345b;
+ border:1px solid #31537b;font-size:22px
+}
+.wrap{width:100%;max-width:520px;margin:auto;padding:15px}
+.page{display:none;animation:fade .18s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:.5}to{opacity:1}}
 .card{
- background:#0b1b31;border:1px solid #203c5c;
- border-radius:16px;padding:18px;margin-bottom:15px
+ background:linear-gradient(145deg,#0d1e38,#09162a);
+ border:1px solid var(--border);
+ border-radius:17px;padding:17px;margin-bottom:15px
 }
-h1{font-size:27px}
-h2{font-size:20px}
-p{color:#a8bdd6;line-height:1.8}
-.balance{font-size:34px;font-weight:bold;color:#fff}
-button,.button{
- border:0;border-radius:10px;padding:12px 15px;
- background:#1677ff;color:white;font-weight:bold;
- cursor:pointer;text-decoration:none;display:inline-block
+h1{font-size:28px;line-height:1.55;margin:12px 0}
+h2{font-size:19px;margin:0 0 15px}
+h3{font-size:15px;margin:0 0 10px}
+p{line-height:1.8;color:var(--muted)}
+.muted{color:var(--muted)}
+.small{font-size:11px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand-large{font-size:38px;font-weight:900;color:var(--cyan)}
+.logo-mark{
+ width:68px;height:68px;margin:0 auto 12px;border-radius:19px;
+ display:grid;place-items:center;
+ background:linear-gradient(140deg,#22c9ff,#1353d7);
+ color:#071327;font-size:42px;font-weight:900;
+ transform:skew(-7deg)
 }
-.secondary{background:#142c49;border:1px solid #294766}
-nav{display:flex;gap:7px;overflow-x:auto;padding:12px 0}
-nav button{white-space:nowrap}
-.view{display:none}
-.view.active{display:block}
+.btn{
+ border:0;border-radius:10px;padding:13px 15px;
+ color:white;background:var(--blue);font-weight:bold;
+ display:inline-flex;align-items:center;justify-content:center;gap:7px
+}
+.btn.block{width:100%}
+.btn.outline{background:transparent;border:1px solid #49658b}
+.btn.soft{background:#142b49;border:1px solid #28476b}
+.btn.green{background:#087d62}
+.btn.red{background:#9f3044}
+.btn:disabled{opacity:.5}
 input,select{
- width:100%;padding:12px;margin:7px 0 14px;
- background:#061426;color:white;border:1px solid #294766;
- border-radius:9px
+ width:100%;padding:13px;border-radius:10px;
+ border:1px solid #294666;background:#07152a;color:white;
+ outline:none;margin:7px 0 15px
 }
-label{display:block;color:#a8bdd6;font-size:14px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.plan{border:1px solid #294766;border-radius:13px;padding:15px;margin:10px 0}
-.price{font-size:25px;font-weight:bold;color:#32c7ff}
-.note{background:#302713;color:#ffe2a0;padding:12px;border-radius:10px;line-height:1.8}
-.muted{color:#a8bdd6;font-size:13px}
-.row{padding:12px 0;border-bottom:1px solid #203c5c;overflow-wrap:anywhere}
-footer{text-align:center;color:#8198b4;padding:25px;font-size:12px}
-@media(min-width:650px){.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.plans .plan{margin:0}.grid{grid-template-columns:repeat(2,1fr)}}
+input:focus,select:focus{border-color:var(--blue)}
+label{display:block;color:#b6c9e0;font-size:12px}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 12px}
+.section-title h2{margin:0}
+.link{color:#55aaff;font-size:12px}
+.balance{
+ padding:18px;background:linear-gradient(120deg,#102e56,#10203d);
+ border:1px solid #2862a2;border-radius:15px;margin:16px 0
+}
+.amount{font-size:33px;font-weight:800;direction:ltr;text-align:right}
+.positive{color:var(--green)}
+.negative{color:var(--red)}
+.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.action{
+ padding:13px 3px;border-radius:12px;background:#102645;
+ border:1px solid #29496e;text-align:center;font-size:12px
+}
+.action span{display:block;font-size:23px;margin-bottom:7px}
+.banner{
+ border-radius:15px;padding:19px;
+ background:linear-gradient(115deg,#073b85,#102c5a,#075d83);
+ border:1px solid #245ca3;margin:16px 0
+}
+.banner h2{line-height:1.6}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.asset,.history-item,.profile-item{
+ padding:13px;background:#0c1d34;border:1px solid #203b5b;
+ border-radius:12px;margin-bottom:9px
+}
+.asset{display:flex;align-items:center;gap:11px;text-align:right;width:100%;color:white}
+.coin{
+ width:35px;height:35px;border-radius:50%;display:grid;
+ place-items:center;font-size:19px;font-weight:bold;color:white;flex-shrink:0
+}
+.usdt{background:#17a982}
+.btc{background:#f39827}
+.eth{background:#3679ed}
+.bnb{background:#dcb52e}
+.asset .arrow{margin-right:auto;color:#8ca5c4;font-size:19px}
+.plan{
+ border:1px solid #274767;background:#0b1c33;
+ border-radius:14px;padding:15px;margin-bottom:10px
+}
+.plan .price{font-size:26px;color:#36c4ff;font-weight:bold;direction:ltr;text-align:right}
+.badge{display:inline-block;border-radius:20px;padding:5px 9px;font-size:10px;background:#143d37;color:#53e2ae}
+.badge.pending{background:#493a18;color:#ffd77d}
+.iconbox{
+ width:38px;height:38px;display:grid;place-items:center;
+ border-radius:11px;background:#122c4e;font-size:20px;flex-shrink:0
+}
+.steps{display:flex;justify-content:space-between;margin:22px 0}
+.step{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:#182d4b;color:#b2c4dc}
+.step.active{background:var(--blue);color:white}
+.qr-placeholder{
+ margin:18px auto;width:145px;height:145px;background:white;color:#101010;
+ display:grid;place-items:center;border:8px solid white;text-align:center
+}
+.qr-placeholder span{font-size:13px;line-height:1.6}
+.codebox{
+ direction:ltr;text-align:left;overflow-wrap:anywhere;
+ background:#061426;border:1px solid #284766;border-radius:10px;
+ padding:12px;margin:12px 0;color:#8ec9ff
+}
+.bottom-nav{
+ position:fixed;bottom:0;left:0;right:0;z-index:20;
+ display:flex;justify-content:space-around;align-items:center;
+ padding:9px 3px calc(9px + env(safe-area-inset-bottom));
+ background:#08152a;border-top:1px solid #29415e
+}
+.navbtn{
+ flex:1;background:none;border:0;color:#7f99ba;
+ font-size:10px;padding:5px 0
+}
+.navbtn span{display:block;font-size:20px;margin-bottom:4px}
+.navbtn.active{color:#36a9ff}
+.notice{
+ border:1px solid #665222;background:#2b2516;color:#f3d68a;
+ border-radius:10px;padding:12px;line-height:1.8;font-size:12px;margin-bottom:15px
+}
+hr{border:0;border-top:1px solid #203650;margin:15px 0}
+.center{text-align:center}
+.auth-logo{text-align:center;padding:35px 0 25px}
+.auth-logo .brand-large{font-size:34px}
+.auth-logo p{margin:5px}
+.auth-wrap{padding-top:15px}
+footer{text-align:center;color:#617b9d;font-size:10px;padding:20px}
+.hidden{display:none!important}
+#toast{
+ position:fixed;z-index:50;bottom:90px;left:15px;right:15px;
+ max-width:450px;margin:auto;padding:13px;border-radius:10px;
+ background:#173659;border:1px solid #3676b6;display:none;text-align:center
+}
+.admin-stat{padding:13px;border:1px solid var(--border);border-radius:12px;background:#0d2039}
+@media(min-width:600px){
+ .wrap{padding:22px}
+ .quick-actions{gap:12px}
+}
 </style>
 </head>
 
 <body>
-<header>
- <div>
-  <div class="logo">NexTrade</div>
-  <small>Invest · Trade · Grow</small>
+
+<header class="topbar">
+ <div class="row" style="justify-content:flex-start">
+  <div class="avatar">👤</div>
+  <div>
+   <div class="brand" style="font-size:20px">NexTrade</div>
+   <div class="muted small">Invest · Trade · Grow</div>
+  </div>
  </div>
- <span class="muted">نسخة أولية</span>
+ <button class="btn soft" onclick="showPage('profile')" aria-label="الملف الشخصي">☰</button>
 </header>
 
-<div class="container">
+<main class="wrap">
 
-<section class="card">
- <p>أهلاً بك في NexTrade</p>
- <h1>استثمر بوعي، وتابع حسابك بمكان واحد.</h1>
- <p>واجهة عربية لمتابعة الحساب والخطط والطلبات.</p>
- <button onclick="openTab('plans')">استكشف الخطط</button>
- <button class="secondary" onclick="openTab('account')">حسابي</button>
-</section>
-
-<section class="card">
- <p>الرصيد المسجل محلياً — تجريبي فقط</p>
- <div class="balance">$0.00</div>
- <p>لا توجد أموال مؤكدة أو معاملات مالية مرتبطة بهذه النسخة.</p>
- <button onclick="openTab('deposit')">الإيداع</button>
- <button class="secondary" onclick="openTab('withdraw')">السحب</button>
-</section>
-
-<nav>
- <button onclick="openTab('home')">الرئيسية</button>
- <button onclick="openTab('plans')">الاستثمار</button>
- <button onclick="openTab('deposit')">الإيداع</button>
- <button onclick="openTab('withdraw')">السحب</button>
- <button onclick="openTab('history')">سجل العمليات</button>
- <button onclick="openTab('kyc')">التوثيق</button>
- <button onclick="openTab('account')">الملف الشخصي</button>
-</nav>
-
-<section id="home" class="view active">
- <div class="card">
-  <h2>مرحباً بك في NexTrade</h2>
-  <p>من هنا يمكنك استعراض الأقسام ومتابعة الطلبات المسجلة على هذا الجهاز.</p>
-  <button onclick="openTab('history')">عرض سجل العمليات</button>
+<!-- 1: شاشة البداية -->
+<section id="welcome" class="page active">
+ <div class="auth-logo">
+  <div class="logo-mark">N</div>
+  <div class="brand-large">NexTrade</div>
+  <p>Invest · Trade · Grow</p>
  </div>
- <div class="card">
-  <h2>آخر العمليات</h2>
-  <div id="recent" class="muted">لا توجد عمليات حتى الآن.</div>
- </div>
-</section>
-
-<section id="plans" class="view">
- <h2>خطط الاستثمار</h2>
- <div class="note">الخطط التالية توضيحية فقط، ولا تمثل عرضاً استثمارياً فعلياً أو عائداً مضموناً.</div>
- <div class="plans">
-  <div class="plan">
-   <h2>خطة البداية</h2>
-   <div class="price">$10</div>
-   <p>خطة توضيحية</p>
-   <button onclick="demo()">اختيار الخطة</button>
-  </div>
-  <div class="plan">
-   <h2>خطة النمو</h2>
-   <div class="price">$50</div>
-   <p>خطة توضيحية</p>
-   <button onclick="demo()">اختيار الخطة</button>
-  </div>
-  <div class="plan">
-   <h2>الخطة المتقدمة</h2>
-   <div class="price">$100</div>
-   <p>خطة توضيحية</p>
-   <button onclick="demo()">اختيار الخطة</button>
-  </div>
- </div>
-</section>
-
-<section id="deposit" class="view">
- <div class="card">
-  <h2>طلب إيداع</h2>
-  <div class="note">لم تتم إضافة عنوان محفظة بعد. لا تحوّل أموالاً قبل التأكد من العنوان والشبكة وآلية التحقق.</div>
-  <form onsubmit="return submitRequest(event,'إيداع')">
-   <label>العملة</label>
-   <select id="depAsset"><option>USDT</option><option>BNB</option><option>BTC</option><option>ETH</option></select>
-   <label>الشبكة</label>
-   <select id="depNetwork"><option>غير محددة</option><option>BEP20</option><option>ERC20</option><option>TRC20</option></select>
-   <label>المبلغ (تسجيل تجريبي فقط)</label>
-   <input id="depAmount" type="number" min="0.01" step="0.01" required>
-   <label>معرّف المعاملة، إن توفر</label>
-   <input id="depTx" maxlength="120">
-   <button type="submit">تسجيل طلب تجريبي</button>
-  </form>
- </div>
-</section>
-
-<section id="withdraw" class="view">
- <div class="card">
-  <h2>طلب سحب</h2>
-  <div class="note">هذا النموذج لا يرسل الأموال، ولا يتحقق من الرصيد أو ينفّذ التحويلات.</div>
-  <form onsubmit="return submitRequest(event,'سحب')">
-   <label>العملة</label>
-   <select id="withAsset"><option>USDT</option><option>BNB</option><option>BTC</option><option>ETH</option></select>
-   <label>الشبكة</label>
-   <select id="withNetwork"><option>BEP20</option><option>ERC20</option><option>TRC20</option></select>
-   <label>المبلغ</label>
-   <input id="withAmount" type="number" min="0.01" step="0.01" required>
-   <label>عنوان المستلم</label>
-   <input id="withAddress" maxlength="160" required>
-   <button type="submit">تسجيل طلب تجريبي</button>
-  </form>
- </div>
-</section>
-
-<section id="history" class="view">
- <div class="card">
-  <h2>سجل العمليات</h2>
-  <div id="historyList" class="muted">لا توجد عمليات.</div>
-  <button class="secondary" onclick="clearHistory()">مسح السجل المحلي</button>
- </div>
-</section>
-
-<section id="kyc" class="view">
- <div class="card">
-  <h2>توثيق الهوية KYC</h2>
-  <div class="note">التوثيق الحقيقي غير مفعّل. لا تدخل أو ترفع معلومات هوية حساسة في هذه النسخة.</div>
-  <form onsubmit="event.preventDefault();alert('هذه نسخة تجريبية؛ لم يتم توثيق الهوية فعلياً.')">
-   <label>الاسم الكامل</label>
-   <input maxlength="100" required>
-   <label>بلد الإقامة</label>
-   <input maxlength="80" required>
-   <button type="submit">متابعة تجريبية</button>
-  </form>
- </div>
-</section>
-
-<section id="account" class="view">
- <div class="card">
-  <h2>الملف الشخصي</h2>
-  <form onsubmit="saveProfile(event)">
-   <label>اسم العرض</label>
-   <input id="profileName" maxlength="80">
-   <label>البريد الإلكتروني</label>
-   <input id="profileEmail" type="email">
-   <button type="submit">حفظ على هذا الجهاز</button>
-  </form>
-  <p class="muted">تسجيل الدخول وقاعدة البيانات غير مفعّلين بعد.</p>
- </div>
-</section>
-
-<section class="card">
- <h2>التواصل</h2>
- <p>للتواصل عبر تيليغرام، استخدم الرابط التالي.</p>
- <a class="button" href="https://t.me/15594067202" target="_blank" rel="noopener">فتح تيليغرام</a>
- <p class="muted">قد لا يعمل الرابط مباشرة إذا لم يكن الرقم مرتبطاً باسم مستخدم عام على تيليغرام.</p>
-</section>
-
-</div>
-
-<footer>
- NexTrade · واجهة أولية تجريبية · لا تنفذ معاملات مالية حقيقية
-</footer>
-
-<script>
-const KEY='nextrade_ui_demo';
-let operations=[];
-try{operations=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(operations))operations=[]}catch(e){operations
+ <div class="card center" style="padding:25px 18px">
+  <div style="font-size:75px;margin:8px">🐂</div>
+  <h1 style="font-size:25px">مع
