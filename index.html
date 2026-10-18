@@ -2,306 +2,108 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#080808">
-<title>Next Trade</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexTrade</title>
 
 <style>
-:root {
-  --gold: #e5bd59;
-  --gold-light: #ffe6a0;
-  --black: #080808;
-  --panel: #151515;
-  --border: #4c3b19;
-  --text: #f8f3e7;
-  --muted: #aaa18e;
-}
-
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  background: var(--black);
-  color: var(--text);
-  font-family: Arial, Tahoma, sans-serif;
+    margin: 0;
+    background: #050d19;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
 }
 
 header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px;
-  background: #0b0b0b;
-  border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background: #081426;
+    border-bottom: 1px solid #183453;
 }
 
 .logo {
-  font-size: 26px;
-  color: var(--gold);
+    font-size: 27px;
+    font-weight: bold;
+    color: #168cff;
 }
 
-.brand {
-  font-size: 22px;
-  font-weight: bold;
-  color: var(--gold);
-}
-
-.subtitle {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-main {
-  max-width: 700px;
-  margin: auto;
-  padding: 14px 12px 100px;
+.container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
 }
 
 .card {
-  background: linear-gradient(145deg, #191919, #101010);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 18px;
-  margin-bottom: 14px;
+    background: linear-gradient(145deg, #102641, #091526);
+    border: 1px solid #21466f;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 18px;
 }
 
-.hero {
-  text-align: center;
-  padding: 28px 12px;
-}
-
-.bull {
-  font-size: 85px;
-  filter: drop-shadow(0 0 15px #d9ad45);
-}
-
-h1, h2, h3 {
-  color: var(--gold);
-}
-
-p {
-  color: var(--muted);
-  line-height: 1.8;
-}
-
-input, select {
-  display: block;
-  width: 100%;
-  padding: 13px;
-  margin-top: 7px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: #090909;
-  color: white;
-  font-size: 15px;
-}
-
-label {
-  display: block;
-  margin: 14px 0;
-  color: var(--muted);
-  font-size: 14px;
+.balance {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 15px 0;
 }
 
 button {
-  cursor: pointer;
-  font-size: 15px;
+    background: #1677ff;
+    color: white;
+    border: none;
+    border-radius: 9px;
+    padding: 13px 20px;
+    cursor: pointer;
+    margin: 4px;
 }
 
-.btn {
-  display: block;
-  width: 100%;
-  padding: 13px;
-  margin-top: 12px;
-  border: 1px solid var(--gold);
-  border-radius: 10px;
-  background: linear-gradient(135deg, #f5dc8d, #bc8b2a);
-  color: #151006;
-  font-weight: bold;
-}
-
-.btn-dark {
-  background: #171717;
-  color: var(--gold);
-  border: 1px solid var(--border);
-}
-
-.hidden {
-  display: none !important;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.stat, .plan {
-  background: #090909;
-  border: 1px solid var(--border);
-  border-radius: 13px;
-  padding: 13px;
-}
-
-.stat strong, .plan strong {
-  display: block;
-  margin: 10px 0;
-  color: var(--gold);
-  font-size: 22px;
-}
-
-.plan small {
-  display: block;
-  color: var(--muted);
-  line-height: 1.8;
-}
-
-.quick {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.quick button {
-  padding: 14px 3px;
-  background: #111;
-  color: var(--gold);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-
-.quick span {
-  display: block;
-  font-size: 24px;
-  margin-bottom: 7px;
-}
-
-.notice {
-  padding: 12px;
-  border-radius: 10px;
-  background: #251d0d;
-  border: 1px solid var(--border);
-  color: #e9d49c;
-  line-height: 1.8;
-  font-size: 13px;
+button:hover {
+    background: #3690ff;
 }
 
 nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 20;
-  display: flex;
-  justify-content: space-around;
-  padding: 9px 2px;
-  padding-bottom: calc(9px + env(safe-area-inset-bottom));
-  background: #090909;
-  border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
 nav button {
-  flex: 1;
-  padding: 5px 1px;
-  color: var(--muted);
-  background: none;
-  border: none;
-  font-size: 11px;
+    background: #10233b;
+    border: 1px solid #21466f;
 }
 
-nav button span {
-  display: block;
-  font-size: 21px;
-  margin-bottom: 4px;
+input, select {
+    width: 100%;
+    padding: 13px;
+    margin: 10px 0;
+    border-radius: 9px;
+    border: 1px solid #21466f;
+    background: #071426;
+    color: white;
 }
 
-nav button.active {
-  color: var(--gold);
+.page {
+    display: none;
 }
 
-.log {
-  padding: 12px 0;
-  border-bottom: 1px solid #302719;
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
+.page.active {
+    display: block;
 }
 
-.chart {
-  height: 220px;
-  display: flex;
-  gap: 3px;
-  align-items: stretch;
-  padding: 10px 4px;
-  background: repeating-linear-gradient(
-    to bottom,
-    #111 0px,
-    #111 43px,
-    #292929 44px
-  );
+.muted {
+    color: #91a8c4;
 }
 
-.candle {
-  position: relative;
-  flex: 1;
-}
-
-.wick {
-  position: absolute;
-  left: 50%;
-  width: 2px;
-  top: var(--top);
-  height: var(--height);
-  background: var(--color);
-}
-
-.candle-body {
-  position: absolute;
-  left: 15%;
-  width: 70%;
-  top: var(--body-top);
-  height: var(--body-height);
-  min-height: 3px;
-  background: var(--color);
-}
-
-.trade-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.trade-buttons button {
-  padding: 15px;
-  border-radius: 10px;
-  font-weight: bold;
-}
-
-.up {
-  color: #8affbf;
-  background: #103b29;
-  border: 1px solid #28714f;
-}
-
-.down {
-  color: #ffb6bb;
-  background: #401719;
-  border: 1px solid #853139;
-}
-
-@media (max-width: 360px) {
-  .quick button {
-    font-size: 12px;
-  }
-
-  .grid {
-    grid-template-columns: 1fr 1fr;
-  }
+@media (max-width: 500px) {
+    nav {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 </style>
 </head>
@@ -309,406 +111,203 @@ nav button.active {
 <body>
 
 <header>
-  <div>
-    <div class="brand">🐂 Next Trade</div>
-    <div class="subtitle">INVEST · TRADE · GROW</div>
-  </div>
-
-  <button class="btn btn-dark"
-          style="width:auto;margin:0"
-          onclick="showPage('account')">
-    حسابي
-  </button>
+    <div class="logo">NexTrade</div>
+    <div>Invest · Trade · Grow</div>
 </header>
 
-<main>
-
-<!-- تسجيل الدخول وإنشاء الحساب -->
-
-<section id="auth">
-
-  <div class="card hero">
-    <div class="bull">🐂</div>
-    <h1>Next Trade</h1>
-    <p>استثمر بوعي وتابع حسابك من مكان واحد</p>
-  </div>
-
-  <div class="card">
-    <div class="grid">
-      <button class="btn" onclick="setAuthMode('login')">
-        تسجيل الدخول
-      </button>
-
-      <button class="btn btn-dark" onclick="setAuthMode('signup')">
-        إنشاء حساب
-      </button>
-    </div>
-
-    <form id="authForm">
-
-      <label>
-        البريد الإلكتروني
-        <input id="email" type="email"
-               placeholder="name@example.com" required>
-      </label>
-
-      <label>
-        كلمة المرور
-        <input id="password" type="password"
-               minlength="8" required>
-      </label>
-
-      <label id="confirmLabel" class="hidden">
-        تأكيد كلمة المرور
-        <input id="confirmPassword" type="password"
-               minlength="8">
-      </label>
-
-      <button class="btn" id="authSubmit">
-        تسجيل الدخول
-      </button>
-
-    </form>
-
-    <div class="notice" style="margin-top:15px">
-      هذه نسخة واجهة تجريبية. تسجيل الحسابات الحقيقي يحتاج إلى
-      خادم آمن ونظام مصادقة. لا تدخل كلمة مرورك الحقيقية هنا.
-    </div>
-  </div>
-
-</section>
-
-<!-- التطبيق -->
-
-<section id="app" class="hidden">
-
-  <!-- الصفحة الرئيسية -->
-
-  <section id="home" class="page">
-
-    <div class="card">
-      <div class="hero">
-        <div class="bull">🐂</div>
-        <h1>Next Trade</h1>
-        <p>مرحباً بك في منصة Next Trade</p>
-      </div>
-    </div>
-
-    <div class="grid">
-
-      <div class="stat">
-        <span>الرصيد التجريبي</span>
-        <strong id="balance">$0.00</strong>
-        <small>ليس رصيداً مالياً حقيقياً</small>
-      </div>
-
-      <div class="stat">
-        <span>الاستثمارات التجريبية</span>
-        <strong id="invested">$0.00</strong>
-      </div>
-
-      <div class="stat">
-        <span>عائد توضيحي 5%</span>
-        <strong id="profit">$0.00</strong>
-        <small>ليس عائداً مضموناً</small>
-      </div>
-
-      <div class="stat">
-        <span>حالة الحساب</span>
-        <strong style="font-size:17px">تجريبي</strong>
-      </div>
-
-    </div>
-
-    <div class="card">
-      <h2>الخدمات الرئيسية</h2>
-
-      <div class="quick">
-        <button onclick="showPage('deposit')">
-          <span>＋</span>الإيداع
-        </button>
-
-        <button onclick="showPage('withdraw')">
-          <span>⇩</span>السحب
-        </button>
-
-        <button onclick="showPage('investments')">
-          <span>◈</span>الاستثمار
-        </button>
-
-        <button onclick="showPage('trade')">
-          <span>▥</span>التداول
-        </button>
-
-        <button onclick="showPage('tasks')">
-          <span>◷</span>المهام
-        </button>
-
-        <button onclick="showPage('kyc')">
-          <span>▣</span>التوثيق
-        </button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>آخر العمليات</h2>
-      <div id="recent">
-        <p>لا توجد عمليات حتى الآن.</p>
-      </div>
-    </div>
-
-  </section>
-
-  <!-- الاستثمارات -->
-
-  <section id="investments" class="page hidden">
-    <div class="card">
-      <h2>خطط الاستثمار</h2>
-
-      <div class="notice">
-        الخطط التالية للعرض التجريبي فقط. نسبة 5% مثال حسابي
-        وليست وعداً بالربح أو ضماناً لرأس المال.
-      </div>
-
-      <div class="grid" id="plans" style="margin-top:15px"></div>
-    </div>
-  </section>
-
-  <!-- الإيداع -->
-
-  <section id="deposit" class="page hidden">
-    <div class="card">
-      <h2>الإيداع</h2>
-
-      <div class="notice">
-        الإيداع الحقيقي غير مفعّل في هذه النسخة.
-        لا تحول أموالاً إلى عنوان غير متحقق منه.
-      </div>
-
-      <label>
-        العملة والشبكة
-        <select id="network">
-          <option>USDT — تحديد الشبكة لاحقاً</option>
-          <option>BNB Smart Chain — BEP20</option>
-          <option>TRON — TRC20</option>
-        </select>
-      </label>
-
-      <label>
-        مبلغ تجريبي بالدولار
-        <input id="depositAmount" type="number" min="1"
-               placeholder="50">
-      </label>
-
-      <button class="btn" onclick="recordAction('طلب إيداع تجريبي')">
-        تسجيل طلب تجريبي
-      </button>
-    </div>
-  </section>
-
-  <!-- السحب -->
-
-  <section id="withdraw" class="page hidden">
-    <div class="card">
-      <h2>السحب الشهري</h2>
-
-      <div class="notice">
-        السحب الحقيقي يحتاج إلى نظام خلفي للتحقق من الرصيد
-        والطلبات وتنفيذ التحويلات بأمان.
-      </div>
-
-      <label>
-        المبلغ التجريبي
-        <input id="withdrawAmount" type="number" min="1"
-               placeholder="أدخل المبلغ">
-      </label>
-
-      <label>
-        عنوان المحفظة العام
-        <input id="walletAddress"
-               placeholder="عنوان عام فقط">
-      </label>
-
-      <button class="btn" onclick="recordAction('طلب سحب تجريبي')">
-        تسجيل طلب تجريبي
-      </button>
-    </div>
-  </section>
-
-  <!-- توثيق الهوية -->
-
-  <section id="kyc" class="page hidden">
-    <div class="card">
-      <h2>توثيق الهوية KYC</h2>
-
-      <div class="notice">
-        هذه معاينة محلية فقط. لا ترفع مستندات هوية حقيقية
-        إلى نسخة تجريبية غير مؤمنة.
-      </div>
-
-      <label>
-        الاسم الثلاثي
-        <input id="fullName" placeholder="أدخل الاسم الثلاثي">
-      </label>
-
-      <label>
-        صورة الهوية — الوجه الأمامي
-        <input id="frontImage" type="file" accept="image/*">
-      </label>
-
-      <img id="frontPreview" class="hidden"
-           style="max-width:100%;max-height:180px"
-           alt="معاينة الوجه الأمامي">
-
-      <label>
-        صورة الهوية — الوجه الخلفي
-        <input id="backImage" type="file" accept="image/*">
-      </label>
-
-      <img id="backPreview" class="hidden"
-           style="max-width:100%;max-height:180px"
-           alt="معاينة الوجه الخلفي">
-
-      <button class="btn" onclick="recordAction('طلب توثيق تجريبي')">
-        حفظ الطلب التجريبي
-      </button>
-    </div>
-  </section>
-
-  <!-- المهام -->
-
-  <section id="tasks" class="page hidden">
-    <div class="card">
-      <h2>المهام اليومية</h2>
-
-      <p>
-        الموعد الأساسي الساعة 2 ظهراً، والموعد البديل
-        الساعة 9 مساءً إذا فاتك الموعد الأول.
-      </p>
-
-      <div class="stat">
-        <span>الوقت المحلي</span>
-        <strong id="clock">--:--</strong>
-        <p id="taskStatus"></p>
-      </div>
-
-      <button id="claimButton" class="btn" onclick="claimTask()">
-        استلام المهمة التجريبية
-      </button>
-
-      <p>المهام هنا تجريبية ولا تمنح أرباحاً مالية حقيقية.</p>
-    </div>
-  </section>
-
-  <!-- التداول -->
-
-  <section id="trade" class="page hidden">
-    <div class="card">
-      <h2>التداول</h2>
-
-      <div class="notice">
-        الرسم التالي محاكاة محلية وليس أسعار سوق مباشرة.
-        لا يتم إرسال أوامر تداول حقيقية.
-      </div>
-
-      <div class="card" style="margin-top:15px">
-        <div class="row">
-          <strong>BTC / USDT</strong>
-          <strong id="marketPrice">$67,420.00</strong>
+<div class="container">
+
+    <nav>
+        <button onclick="showPage('home')">الرئيسية</button>
+        <button onclick="showPage('deposit')">الإيداع</button>
+        <button onclick="showPage('withdraw')">السحب</button>
+        <button onclick="showPage('plans')">الاستثمار</button>
+        <button onclick="showPage('history')">سجل العمليات</button>
+        <button onclick="showPage('profile')">الملف الشخصي</button>
+    </nav>
+
+    <section id="home" class="page active">
+        <h2>مرحباً بك في NexTrade</h2>
+
+        <div class="card">
+            <div class="muted">الرصيد الحالي</div>
+            <div class="balance" id="balance">$125.00</div>
+
+            <button onclick="showPage('deposit')">
+                إيداع
+            </button>
+
+            <button onclick="showPage('withdraw')">
+                سحب
+            </button>
         </div>
 
-        <div id="chart" class="chart"></div>
-      </div>
+        <div class="card">
+            <h3>خطط الاستثمار</h3>
+            <p class="muted">
+                استعرض الخطط المتاحة على المنصة.
+            </p>
 
-      <label>
-        حجم الصفقة التجريبية بالدولار
-        <input id="tradeAmount" type="number"
-               min="1" value="10">
-      </label>
+            <button onclick="showPage('plans')">
+                عرض الخطط
+            </button>
+        </div>
+    </section>
 
-      <div class="trade-buttons">
-        <button class="up" onclick="trade('صعود')">
-          ▲ صعود
-        </button>
+    <section id="deposit" class="page">
+        <div class="card">
+            <h2>الإيداع</h2>
 
-        <button class="down" onclick="trade('هبوط')">
-          ▼ هبوط
-        </button>
-      </div>
+            <label>طريقة الإيداع</label>
 
-      <p id="tradeMessage">بانتظار اختيارك.</p>
-    </div>
-  </section>
+            <select id="depositMethod">
+                <option>USDT - TRC20</option>
+                <option>USDT - ERC20</option>
+                <option>Bitcoin</option>
+                <option>Ethereum</option>
+            </select>
 
-  <!-- الحساب الشخصي -->
+            <label>المبلغ</label>
 
-  <section id="account" class="page hidden">
-    <div class="card">
-      <h2>الملف الشخصي</h2>
+            <input
+                type="number"
+                id="depositAmount"
+                placeholder="أدخل المبلغ"
+                min="1"
+            >
 
-      <label>
-        البريد الإلكتروني
-        <input id="accountEmail" readonly>
-      </label>
+            <button onclick="deposit()">
+                تسجيل طلب الإيداع
+            </button>
 
-      <label>
-        الاسم الثلاثي
-        <input id="accountName" placeholder="الاسم الثلاثي">
-      </label>
+            <p class="muted">
+                يتطلب الإيداع الحقيقي ربط مزود مالي آمن.
+            </p>
+        </div>
+    </section>
 
-      <button class="btn" onclick="saveAccountName()">
-        حفظ الاسم محلياً
-      </button>
+    <section id="withdraw" class="page">
+        <div class="card">
+            <h2>السحب</h2>
 
-      <button class="btn btn-dark"
-              onclick="showPage('kyc')">
-        توثيق الهوية
-      </button>
+            <label>المبلغ</label>
 
-      <button class="btn btn-dark"
-              onclick="showPage('history')">
-        سجل العمليات
-      </button>
+            <input
+                type="number"
+                id="withdrawAmount"
+                placeholder="أدخل المبلغ"
+                min="1"
+            >
 
-      <button class="btn btn-dark"
-              onclick="logout()">
-        تسجيل الخروج
-      </button>
-    </div>
-  </section>
+            <button onclick="withdraw()">
+                طلب السحب
+            </button>
+        </div>
+    </section>
 
-  <!-- سجل العمليات -->
+    <section id="plans" class="page">
+        <div class="card">
+            <h2>خطط الاستثمار</h2>
 
-  <section id="history" class="page hidden">
-    <div class="card">
-      <h2>سجل العمليات</h2>
-      <div id="historyList">
-        <p>لا توجد عمليات.</p>
-      </div>
-    </div>
-  </section>
+            <p>الخطة الأولى: $10</p>
+            <p>الخطة الثانية: $50</p>
+            <p>الخطة الثالثة: $100</p>
 
-</section>
-</main>
+            <p class="muted">
+                هذه خيارات عرض فقط وليست عروضاً استثمارية فعلية.
+            </p>
+        </div>
+    </section>
 
-<nav id="bottomNav" class="hidden">
-  <button class="active" onclick="showPage('home')">
-    <span>⌂</span>الرئيسية
-  </button>
+    <section id="history" class="page">
+        <div class="card">
+            <h2>سجل العمليات</h2>
+            <div id="historyList">
+                لا توجد عمليات حتى الآن.
+            </div>
+        </div>
+    </section>
 
-  <button onclick="showPage('investments')">
-    <span>◈</span>الاستثمار
-  </button>
+    <section id="profile" class="page">
+        <div class="card">
+            <h2>الملف الشخصي</h2>
+            <p>اسم المستخدم: مستخدم NexTrade</p>
+            <p>حالة الحساب: نموذج أولي</p>
+        </div>
+    </section>
 
-  <button onclick="showPage('trade')">
-    <span>▥</span>التداول
-  </button>
+</div>
 
-  <button onclick="showPage('deposit')">
-    <span>＋</span>الإيداع
-  </button>
+<script>
+let balance = 125;
+let history = [];
 
-  <button onclick="showPage('account')">
-    <span>♙</span>حسابي
-  </button>
-     </nav>
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+
+    document.getElementById(pageId).classList.add('active');
+}
+
+function updateBalance() {
+    document.getElementById('balance').textContent =
+        '$' + balance.toFixed(2);
+}
+
+function addHistory(type, amount) {
+    history.unshift({
+        type: type,
+        amount: amount,
+        date: new Date().toLocaleString()
+    });
+
+    document.getElementById('historyList').innerHTML =
+        history.map(item =>
+            `<p>${item.type} — $${item.amount.toFixed(2)}
+            <br><small>${item.date}</small></p>`
+        ).join('');
+}
+
+function deposit() {
+    const amount = Number(
+        document.getElementById('depositAmount').value
+    );
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+        alert('أدخل مبلغاً صحيحاً');
+        return;
+    }
+
+    alert(
+        'تم إنشاء طلب إيداع تجريبي بقيمة $' +
+        amount.toFixed(2) +
+        '. لم يتم تحويل أموال حقيقية.'
+    );
+
+    addHistory('طلب إيداع تجريبي', amount);
+
+    document.getElementById('depositAmount').value = '';
+}
+
+function withdraw() {
+    const amount = Number(
+        document.getElementById('withdrawAmount').value
+    );
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+        alert('أدخل مبلغاً صحيحاً');
+        return;
+    }
+
+    if (amount > balance) {
+        alert('الرصيد غير كافٍ');
+        return;
+    }
+
+    alert('هذه النسخة لا تنفّذ عمليات سحب مالية حقيقية.');
+}
+</script>
+
+</body>
+              </html>
